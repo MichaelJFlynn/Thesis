@@ -1,0 +1,24 @@
+\contentsline {chapter}{\numberline {1}Introduction}{11}
+\contentsline {section}{\numberline {1.1}UV Melting Experiments}{12}
+\contentsline {paragraph}{Stacked Pairs}{13}
+\contentsline {paragraph}{Dangling ends and terminal mismatches}{13}
+\contentsline {paragraph}{Hairpin loops}{13}
+\contentsline {paragraph}{Bulge loops}{13}
+\contentsline {paragraph}{Internal loops}{13}
+\contentsline {chapter}{\numberline {2}Partition Function Computation and Improvements}{15}
+\contentsline {section}{\numberline {2.1}Introduction}{15}
+\contentsline {section}{\numberline {2.2}Motivation}{16}
+\contentsline {section}{\numberline {2.3}Computation}{17}
+\contentsline {section}{\numberline {2.4}results}{20}
+\contentsline {chapter}{\numberline {3}Stochastic Traceback Algorithm and Improvements}{21}
+\contentsline {section}{\numberline {3.1}Introduction}{21}
+\contentsline {section}{\numberline {3.2}Motivation}{26}
+\contentsline {section}{\numberline {3.3}Methods}{26}
+\contentsline {section}{\numberline {3.4}Results}{27}
+\contentsline {chapter}{\numberline {4}Nestor and Clustering}{29}
+\contentsline {section}{\numberline {4.1}Motivation}{29}
+\contentsline {chapter}{\numberline {5}Reactivity Experiments}{31}
+\contentsline {section}{\numberline {5.1}Methods}{31}
+\contentsline {chapter}{\numberline {6}Conclusion}{33}
+\contentsline {chapter}{\numberline {A}Tables}{35}
+\contentsline {chapter}{\numberline {B}Figures}{37}

@@ -1,0 +1,191 @@
+%% This is an example first chapter.  You should put chapter/appendix that you
+%% write into a separate file, and add a line \include{yourfilename} to
+%% main.tex, where `yourfilename.tex' is the name of the chapter/appendix file.
+%% You can process specific files by typing their names in at the 
+%% \files=
+%% prompt when you run the file main.tex through LaTeX.
+\chapter{Partition Function Computation and Improvements}
+\section{Introduction}
+
+As a quick review, the partition function for a thermodynamic system
+of fixed volume, in contact with an environment with temperature $T$,
+is
+
+\begin{equation} Z = \sum_s e^{E(s)/ RT } \end{equation}
+
+where $s$ denotes a particular state of the system, $E(s)$ is the
+energy of that state, and $RT$ is the gas constant multiplied by the
+temperature, specified above. Each particular term in the sum is
+called that state's Boltzmann factor. The probability of a state is
+then said to be its Boltzmann factor divided by the partition
+function, or
+
+\begin{equation} P(s) = \frac{e^{E(S)/RT}}{Z}.  \end{equation}
+
+For an RNA molecule, we want to compute the probability of a
+particular folding or group of foldings, so we treat it as a
+thermodynamic system and sum up the energies of each state, which is a
+particular folding. The energy that we assign to an RNA folding is
+determined by the Turner Free energy model, mentioned in the
+introduction. According to this model, the energy of an RNA folding is
+the sum of the energies of the loops that are created by the
+folding. These energies are added, for the most part, linearly. This
+means if the partition function for some small segment of the strand
+is computed, it will have the same contribution to the partition
+function of any larger segment that contains it. So we can spare
+ourselves from enumerating every single folding by using an approach
+that saves the results of these sub-computations in a table, such as
+dynamic programming.
+
+The dynamic programming algorithm for computing the partition function
+of an RNA strands has several versions. If you ignore psuedoknots, and
+if you make an approximation that internal loops will never exceed a
+certain length, there is a general agreement that the fastest
+algorithm runs in $O(n^3)$, where $n$ is the length of the strand. We
+believe that we can streamline this computation even more, taking
+advantage of the fact that empirically, the number of probable base
+pairs of a strand of length $n$ seems to grow like $n$, not
+$n^2$. This is the same result we used to speed up the stochastic
+traceback algorithm and [TODO: see if this actually works].
+
+\section{Motivation}
+
+In certain situations, such as partition function clustering, the
+partition function is computed and recomputed several times. If the
+partition function takes on the order of hours or days to compute,
+this can make partition function clustering a bad option. However in
+these situations it is also true that the partition function is
+recomputed with almost the same properties, just certain pairs
+restricted. This motivates a method of computing the partition
+function using a known pairs heueristic to prune away unneccesary
+computation.
+
+This concept has already been implemented to great success in the
+stochastic traceback algorithm. We've been able to show via experiment
+that the partition function only admits roughly $O(n)$ pairs with
+probabilities above thresholds around the machine precision limit. If
+we have the partition function already computed, we can recompute it
+by only adding in pairs that have sufficient probability. We can also
+extend this method: if a good heuristic appears in the future, one
+that can eliminate a large number of pairs, while being
+computationally cheap, we should be able to use the results to speed
+up the partition function computation.
+
+\section{Computation}
+
+The standard way of computing the partition function involves filling
+out a table where the $(i,j)$ member represents the partition function
+for the substrand from base $i$ to base $j$. Because the energy model
+for RNA is (mostly) linear, the partition function from $i$ to $j$ can
+be expressed as a function of nearby members of this table. This
+function is the recurrence relation for the partition function of
+RNA. Because the free energy model is so complicated and has gone
+through many iterations, differenct RNA folding software packages
+implement different versions of the recurrence relation, and they vary
+widely in complexity.
+
+The definitive representation of the recurrence relation for RNA was
+formulated in 1990 by J.S. McCaskill in his landmark paper \emph{The
+Equilibrium Partition Function and Base Pair Binding Probabilities for
+RNA Secondary Structure} [TODO: cite?]. The formula is also presented
+better and explained well by a later paper by Dirks and Pierce in 2003
+(Dirks & Peirce 2003). Starting at the outermost layer of this
+relation, the formula for the partition function of the strand from
+base $i$ to base $j$ is:
+
+\begin{equation} Q(i,j) = 1 + \sum_{i \leq d < e \leq j}Q(i, d - 1)
+Q^b(d, e) \end{equation}
+
+The theory behind this formula is that the partition function is a sum
+of the empty state (the first term, 1) and the state with at least 1
+pair, the furthest pair to the right being pair $(d,e)$. The term
+$Q^b(d,e)$ is the partition function assuming that base $d$ and base
+$e$ are paired. This function has the following recursion relation:
+
+\begin{equation} Q^b(i, j) = e^{-\frac{\text{Hairpin}(i,j)}{RT}} +
+\sum_{i \leq d < e \leq j} e^{\frac{\text{Interior}(i, d, e,
+j)}{RT}}Q^b(d,e) + \sum_{i \leq d < e \leq j} Q^m(i + 1, d - 1)Q^b(d,
+e) e^{-\frac{\alpha_1 + 2\alpha_2 + \alpha_3(j-e-1)}{RT}}
+\end{equation}
+
+The theory behind this formula is that the partition function for a
+strand assuming $i$ and $j$ are paired includes 3 cases:
+
+\begin{enumerate}
+
+\item
+
+There are no bases paired between $i$ and $j$, the loop is a hairpin
+and uses the energy function for a hairpin loop, we call
+$\text{Hairpin}(i,j)$, which consists of data table lookups.
+
+\item There is an internal loop between $i$ and $j$ and a second pair
+$d$ and $e$. This uses a different energy model, we call
+$\text{Internal}(i,j)$ and also consists of data table lookups.
+
+\item There is a multiloop formed by the pair $i$ and $j$, which must
+be carefully accounted for using a special model for multiloops.
+
+\end{enumerate}
+
+The multiloop partition function, $Q^m(i, j)$ is the last piece of the
+puzzle. The formula is:
+
+\begin{equation} Q^m(i, j) = \sum_{i \leq d < e \leq j}
+e^{-\frac{\alpha_2 + \alpha_3(d-i) + \alpha_3(j-e)}{RT}} Q^b(d,e) +
+Q^m(i, d - 1)Q^b(d, e) e^{-\frac{\alpha_2 + \alpha_3(j-e)}{RT}}
+\end{equation}
+
+In english, this just means we sum up all the ways to just have 1
+pair, and then all the ways to have more than one pair. The case with
+no pairs is not included, as in the original recursion in $Q^b$,
+$Q^m(i+1, d-1)Q^b(d,e)$ must yield at least 2 pairs. Since $Q^b$ makes
+one, then $Q^m$ must make at least 1.
+
+For example, the UNAFold software package implements a particularly
+hairy recurrence relation. Define $Q(i,j)$ as the partition function
+from $i$ to $j$, $Q'(i,j)$ to be the partition function from $i$ to
+$j$, assuming $i$ and $j$ are paired, and define $Q^1(i,j)$ to be the
+partition function from $i$ to $j$, assuming exactly 1 pair happens on
+that interval, and that pair happens with base $i$. The recurrence
+relation is therefore
+
+[recurrence relation]
+
+Note the terms $Z_{ND}$, $Z_{3'D}$, $Z_{5'D}$, and $Z_{DD}$ are extra
+free energy terms corresponding to 'dangle energies' which are the
+results of an experiment later implemented in the model to improve it
+from the standard energy model. In addition there are AU penalty terms
+appended to where pairs are made, as AU and GU pairs have penalties
+associated with forming. These additional energy terms improve the
+model's predictive ability and bring the model closer to the "truth",
+however it unfortunately makes the partition function seem very
+threatening.
+
+Our new partition function relation has the following theory behind
+it: Assume we have the functions $I : B \to \{B\}$ and $J : B \to
+\{B\}$ that return the set of all probably pairs for a base $i$ or a
+base $j$, respectively. The recurrence relation can be reformulated in
+the following way:
+
+[new recurrence relation]
+
+Note that for $Q$ and in many places for $Q'$, instead of a sum over
+the known $k$ that could possibly begin a leftmost pair, we see a
+double sum. One of them over $k$ that could end a leftmost pair, and
+this sum is limited to a certain length below $j$. This is just making
+the same assumption that the internal loop computation makes: there
+are not arbitrarily long strands without base pairs, after a certain
+number of bases it becomes overwhelmingly more likely to make a base
+pair that we can virtually ignore the energy of the the cases of
+length beyond a certain $L$.
+
+As for the seocnd sum, since the number of probable pairs for a base
+$i$ has been shown empirically to be roughly constant, regardless of
+length, the second sum is essentially constant. What this all means is
+that all $O(n^2)$ computations of $Q(i,j)$'s are roughly constant
+time. This means that the overall algorithm is $O(n^2)$, an
+improvement over the previous algorithms asymptotic bound by and order
+of $n$!
+
+\section{results}

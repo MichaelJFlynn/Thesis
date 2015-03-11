@@ -1,0 +1,34 @@
+%% This is an example first chapter.  You should put chapter/appendix that you
+%% write into a separate file, and add a line \include{yourfilename} to
+%% main.tex, where `yourfilename.tex' is the name of the chapter/appendix file.
+%% You can process specific files by typing their names in at the 
+%% \files=
+%% prompt when you run the file main.tex through LaTeX.
+\chapter{Nestor and Clustering}
+\section{Motivation}
+
+Given that we know, for any given RNA strand, the probability of an
+individual state is very low [TODO: reference section], a much more
+important computation is the overall shape of the strand's free energy
+landscape. Even if the probability of an individual state is low, if
+we "integrate" over a basin of free energy, the probability of that
+set of states could be something tangible.
+
+In the past 10 years, several groups have started to explore this
+concept. There are two approaches, in general, to define basins and
+classify structures into them. The first class of methods defines the
+basins from the top-down: given a number of stochastically sampled
+structures, we divide them into groups based on some kind of distance
+metric. These methods tend to be very similar to typical clustering
+algorithms used in computer science and data analysis.
+
+Another approach is to start at local minima and climb up the energy
+barriers between minima using the metropolis-hastings algorithm to
+maintain the correct probabilities according to the partition
+function. These methods can be used to accurately compute the energies
+of the transition states between local minima and these can tell you
+the kinetics of the structure. This technique was developed by [TODO:
+find Vienna people and cite them].
+
+ Enabled by their stochastic sampling algorithm Ye Ding and
+Charles E. Lawrence clustering algorithms. [TODO: evaluate this].

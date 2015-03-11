@@ -1,0 +1,191 @@
+%% This is an example first chapter.  You should put chapter/appendix that you
+%% write into a separate file, and add a line \include{yourfilename} to
+%% main.tex, where `yourfilename.tex' is the name of the chapter/appendix file.
+%% You can process specific files by typing their names in at the 
+%% \files=
+%% prompt when you run the file main.tex through LaTeX.
+\chapter{Stochastic Traceback Algorithm and Improvements}
+\section{Introduction}
+
+The stochastic traceback algorithm was introduced by Ye Ding and
+Charles Lawrence (2003) as a means to explore the energy landscape of
+RNA by sampling structures according to their Boltzmann
+probabilities. This was important because the minimum free energy
+structure was very sensitive to errors in the parameters of the free
+energy model, and although algorithms existed for generating
+suboptimal structures, they either sampled a very limited set of
+states (Zuker 1989), or had exponential runtime and did not correspond
+to the physical ensemble of states (Wuchty et al 1999).
+
+The method uses the partition function algorithm as a forward-fill
+step, then it traces back over the contents of the tables allocated
+during that algorithm. Specifically, the tables $Q(i,j)$, $Q'(i,j)$,
+etc. now contain information about the conditional probabilities of
+bases pairing. The general principle of the backwards trace is that,
+presented with several possibilities for the structure along a
+sequence from $i$ to $j$, the sampling probability for a case is the
+contribution to the partition function by that case's partition
+function. 
+
+[TODO: figure of stochastic traceback algorithm]
+
+The specific algorithm requires two stack data structures. A stack can
+be thought of as a literal "stack", like papers stacked on a desk,
+except instead of paper their are items of data. There are two basic
+operations, one to put an item on the top of the stack, and another to
+retrieve an item off the top. These are called "push" and "pop"
+operations, respectively, in Computer Science. The data items we will
+be pushing on to the first stack, A, are of the form $\{(i,j), b\}$
+where $i$ and $j$ are indexes along the strand and $b$ is either
+$True$ if we have determined that $i$ and $j$ are paired, or $False$
+otherwise. The second stack, B, is where we'll collect pairs and
+unpaired bases for one sample.
+
+The initialization of the algorithm is to push $\{(1, n), False\}$
+onto the stack. From there the algorithm repeats the following steps:
+
+\begin{enumerate}
+\item Pop an element, $\{i, j, b\}$ off stack A.
+\item Case b of $False$:
+\begin{enumerate}
+\item Pick a $(k, l)$ where $i \leq k < l \leq j$ which is to be the rightmost pair on the segment, with the appropriate probability
+\item Push $\{(i, k-1), False\}$ onto stack A, because the structures to the left of $(k,l)$ are not yet determined
+\item Push $\{(k, l), True\}$ onto stack A, because we need to determine what type of loop $(k,l)$ encloses
+\item Push $(k,l)$ onto stack B as a pair
+\item Push all $m$ such  that $l < m \leq j$ onto stack B as unpaired bases, as $(k,l)$ is the rightmost pair
+\end{enumerate}
+\item Case b of $True$:
+\begin{enumerate}
+\item Choose what type of loop $(i,j)$ is from \{HAIRPIN, STACK, BULGE/INTERIOR, MULTI-LOOP\} with the appropriate probability
+\item Push the appropriate elements onto the stack for that loop type, see figure.
+\end{enumerate}
+\item If stack A is empty, the pairs and unpaired bases in stack B become a sampled structure. Reinitialize for additional samples.
+\end{enumerate}
+
+In the preceding algorithm, I have reference the "appropriate
+probability" for each of the different choices. As stated before,
+these are the contributions to the partition function by these
+cases. In the framework of UNAfold, with the matrices $Q(i,j)$,
+$Q'(i,j)$, etc., the specific probabilities would be:
+
+[TODO: note these are pretty much taken from Markham's thesis, but they are accurate, sooo?]
+
+\begin{equation}
+P_k(i,j) = \frac{\left ( Q(i, k-1) + e^{-\frac{b(k-i)}{RT} }\right ) Q^1(k, j)}{Q(i,j)}
+\end{equation}
+
+which is the probability to pick any $k$ for our rightmost pair
+$(k,l)$, where $i \leq k < j$. Note that when summed over all values
+of $k$, the top becomes the definition of $Q(i,j)$, therefore these
+probabilities sum to 1.
+
+\begin{equation}
+[TODO: clarify equations with Aalberts]
+\end{equation}
+
+\begin{equation}
+
+\end{equation}
+
+\begin{equation}
+
+\end{equation}
+
+\begin{equation}
+
+\end{equation}
+
+The probabilities are normalized and sampled from to output the first
+pair. From then on, if a pairs $(h,l)$ is chosen, the algorithm
+chooses the type of structure that $(h,l)$ encloses with the
+probabilities:
+
+\begin{equation}
+
+\end{equation}
+
+\begin{equation}
+
+\end{equation}
+
+\begin{equation}
+
+\end{equation}
+
+\begin{equation}
+
+\end{equation}
+
+\begin{equation}
+
+\end{equation}
+
+The algorithm continues from there on in a similar fashion, choosing
+from each case according to their partition function. Our innovation
+is to reduce the number of unnecesary computations. The partition
+function has already been calculated, so we already know which bases
+that might be paired and which bases are almost certainly not
+paired. By only checking the pairs that we know can happen, we see a
+large speedup.
+
+\section{Motivation}
+
+In the past 10 years, the stochastic traceback algorithm has become an
+increasingly central part of RNA secondary structure prediction
+algorithms (Ding et al 2005, [TODO: cite more]). This is because they
+present many advantages over the minimum free energy prediction. It
+can be shown that the minimum free energy state, even though it is the
+most probable state, can still have astronomically unlikely
+probabilities on average for typical strands of reasonable length
+([TODO: cite, figure]). The more important concept in understanding
+the physical behavior of an RNA strand is therefore the overall shape
+of the energy landscape. Althogh the probability of any individual
+structure might be infinitesimally small, there can be shown to be
+relatively few large basins containing clusters of similar foldings.
+The consensus structures and the difference between the consensus
+structures of these basins define the function of the RNA molecule.
+
+The way the stochastic algorithms probe that is by providing
+structures to group into these basins, and since the stochastic
+traceback algorithm samples states with the exact probability defined
+by the partition function, we know that the macrobehavior of these
+samples match what we would probably see in reality. There is one
+catch and that is statistical error. However, the error can be reduced
+and the landscape can be further explored the more stochastic samples
+we make.
+
+The need to sample large numbers of secondary structures makes a
+speedup very convenient, and that is what motivates our current
+expedition.
+
+\section{Methods}
+
+Taking advantage of the empirical fact that the number of probable
+base pairs for an RNA strand tend to grow very slowly, we can restrict
+our traceback to only explore bases that we know can pair with one
+another.
+
+\section{Results}
+
+As one can see from the tables, the speedup is enormous. For randomly
+sampled sequences up to lengths in the thousands, the old stochastic
+timing grows quadratically, while the new method flatlines below it.
+
+[TODO: add speedup figure]
+
+A good question to ask would be, how do we know that this new
+algorithm is outputting structures with the correct
+probabilities. Verification plots here attempt to answer that
+question.
+
+[TODO: add verification plot]
+
+What we would expect to see from these plots, is that for a given
+base, we would expect to see it pair with other bases with
+probabilities given by the partition function as one can see. Of
+course there is sampling error, so each bin represents a sampling from
+a Bernoulli distribution. For n^2 samples, we would expect [Todo: find
+out what error we expect] error. The number of samples that violate
+the bounds, do not deviate much from what we would expect from doing
+$n^2$ experiments, so I think we can confidently say that the new
+algorithm is making the correct computation.

@@ -1,0 +1,114 @@
+%% This is an example first chapter.  You should put chapter/appendix that you
+%% write into a separate file, and add a line \include{yourfilename} to
+%% main.tex, where `yourfilename.tex' is the name of the chapter/appendix file.
+%% You can process specific files by typing their names in at the 
+%% \files=
+%% prompt when you run the file main.tex through LaTeX.
+\chapter{Introduction}
+
+The current free energy model of RNA is the result of evolution from
+simple model. In the first iterations of the RNA, energy would be
+determined by counting hydrogen bonds of cannonically paired. This
+would mean that GC pairs are given three units, AU and GU pairs are
+both given 2 [TODO: this is almost a quote from turner model paper,
+not sure if I could word it differently, what to do?]. This was a
+useful model to use as a baseline, and indeed it was used to design
+the first minimum free energy algorithm [TODO: cite?]. However, it was
+not very accurate, on average only 20.5% of known base pairs are
+correctly predicted, and later energy models would use it as a control
+for the hypothesis that they increased secondary structure prediction
+accuracy (Mathews et al 1999).
+
+Indeed, much improvement was made over the hydrogen bond model by
+expanding it to include what are called sequence dependent
+parameters. RNA is a polymer, something that bends and is flexible,
+and that bending costs energy. Many of the nucleotides in a given RNA
+sequence are not going to be paired to another base, and the energies
+contributed by these bases as they make up the loops of the secondary
+structure are going to be nonzero (unlike in the hydrogen bond
+model). In fact, the energies of these loop regions are experimentally
+found to be very different depending on what letters make up the
+subsequence that defines the loop [Todo: find citation in Mathews
+paper]. Thus, what the Turner model does is find the energies of all
+the loop regions and add them up. Because the energy model treats the
+loop energies as independent of one another it is called a (or the)
+nearest neighbor model for RNA [TODO: this may not be precisely right,
+consult prof aalberts].
+
+[Todo: loop region figure]
+
+The energy of a loop is dependent on what type of loop it
+is. Different loops have different number of enclosing pairs, and this
+has consequences in the energy model. For example, a base pair stack,
+also called a helical region, is where we have two bases that are
+adjacent to each other pairing to two other bases that are also
+adjacent to each other. A general internal loop happens when there are
+one or more unpaired bases in between the would-be adjacent base pairs
+(no other pairs in between). An internal loop has a completely
+different energy model compared to a helical region, even though they
+are very similar. A multiloop can happen if we have a loop that is
+enclosed by more than 2 base pairs, and this has a different energy
+model still. In addition to these terms, energies associated with
+unpaired bases next to paired bases, called dangling bases, are
+included as well. Also a penalty for helices ending in AU's and
+general miscellanous terms as more papers were written and more
+energies were duct taped into the model [TODO: include kinder
+wording]. The specifics of the energy calculations for different loops
+are included in the following paragraphs, including how they are
+derived from experiments.
+
+\section{UV Melting Experiments}
+
+The thermodynamic behavior of an RNA strand can be determined by
+subjecting it to melting curve analysis. When a folded RNA strand
+denatures, or unfolds because it is heated, its absorbance of UV
+radiation changes. A physical model of this melting process can be
+developed to interpret these curves.
+
+\begin{equation}
+\Delta G = \Delta H + T \Delta S
+\end{equation}
+
+\begin{equation}
+T_M^{-1} = \frac{R}{\Delta H} \log{(C_T/a)} + \frac{\Delta S}{R}
+\end{equation}
+
+The free energy of a loop structure, or rather its $\Delta G$ relative
+to the unfolded state,
+
+\paragraph{Stacked Pairs}
+
+The energy parameters for stacked pair loops were computed in a series
+of optical melting experiments (estimating parameters by UV
+absorbtion) by Xia et al (1998). For each combination of 2 sets of 2
+paired bases, the change in energy at 37 Kelven was computed by
+fitting $\Delta H$ and $\Delta S$ to the data. [Todo: decide whether
+to have an in depth discussion of this]
+
+For GU, a non-cannonical base pair that happens nontheless, the free
+energy is calculated by subtracting the free energy of a CGUACG strand
+from the free energy of a CGUUGACG strand, both of whose free energies
+are determined by optical melting experiments.
+
+
+\paragraph{Dangling ends and terminal mismatches}
+
+[TODO: read serra & turner 1995]
+
+bases adjacent to GU pairs are treated the same as bases adjacent to AU pairs
+
+\paragraph{Hairpin loops}
+
+The energy function for a hairpin loop is a similar table lookup.
+
+[TODO: finish this]
+
+- Tetraloop bonus
+
+\paragraph{Bulge loops}
+
+\paragraph{Internal loops}
+- 2x2 tandem mismatches
+- 2x1 internal loops
+- 1x1 (single mismatch
+
