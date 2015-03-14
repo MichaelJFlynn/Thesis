@@ -18,7 +18,7 @@ states (Zuker 1989), or had exponential runtime and did not correspond
 to the physical ensemble of states (Wuchty et al 1999).
 
 The method uses the partition function algorithm as a forward-fill
-step, then it traces back over the contents of the tables allocated
+step, then it traces back over the contents of the tables calculated
 during that algorithm. Specifically, the tables $Q(i,j)$, $Q'(i,j)$,
 etc. now contain information about the conditional probabilities of
 bases pairing. The general principle of the backwards trace is that,
@@ -46,7 +46,7 @@ onto the stack. From there the algorithm repeats the following steps:
 
 \begin{enumerate}
 \item Pop an element, $\{i, j, b\}$ off stack A.
-\item Case b of $False$:
+\item Case b is $False$:
 \begin{enumerate}
 \item Pick a $(k, l)$ where $i \leq k < l \leq j$ which is to be the rightmost pair on the segment, with the appropriate probability
 \item Push $\{(i, k-1), False\}$ onto stack A, because the structures to the left of $(k,l)$ are not yet determined
@@ -54,7 +54,7 @@ onto the stack. From there the algorithm repeats the following steps:
 \item Push $(k,l)$ onto stack B as a pair
 \item Push all $m$ such  that $l < m \leq j$ onto stack B as unpaired bases, as $(k,l)$ is the rightmost pair
 \end{enumerate}
-\item Case b of $True$:
+\item Case b is $True$:
 \begin{enumerate}
 \item Choose what type of loop $(i,j)$ is from \{HAIRPIN, STACK, BULGE/INTERIOR, MULTI-LOOP\} with the appropriate probability
 \item Push the appropriate elements onto the stack for that loop type, see figure.
@@ -66,59 +66,64 @@ In the preceding algorithm, I have reference the "appropriate
 probability" for each of the different choices. As stated before,
 these are the contributions to the partition function by these
 cases. In the framework of UNAfold, with the matrices $Q(i,j)$,
-$Q'(i,j)$, etc., the specific probabilities would be:
-
-[TODO: note these are pretty much taken from Markham's thesis, but they are accurate, sooo?]
+$Q'(i,j)$, etc., to pick an initial $(k,l)$ pair, the specific
+probabilities would be:
 
 \begin{equation}
-P_k(i,j) = \frac{\left ( Q(i, k-1) + e^{-\frac{b(k-i)}{RT} }\right ) Q^1(k, j)}{Q(i,j)}
+P(k | (i,j)) = \frac{\left ( Q(i, k-1) + e^{-\frac{b(k-i)}{RT} }\right ) Q^1(k, j)}{Q(i,j)}
 \end{equation}
 
-which is the probability to pick any $k$ for our rightmost pair
-$(k,l)$, where $i \leq k < j$. Note that when summed over all values
-of $k$, the top becomes the definition of $Q(i,j)$, therefore these
-probabilities sum to 1.
+which is the probability to pick the $k$, where $i \leq k < j$. Note
+that when summed over all values of $k$, the numerator becomes the
+definition of $Q(i,j)$, therefore these probabilities sum to 1. To
+pick $l$ on the range from $i$ to $j$, we use the definition of
+$Q^1(k, j)$ in a similar way:
 
 \begin{equation}
-[TODO: clarify equations with Aalberts]
+\begin{split}
+P(l = j | k, j) &= \frac{e^{-c/RT}Z_{ND}(k, j)Q'(k,j) + e^{-(b+c)/RT}Z_{5'D}(k+1, j)Q'(k+1, j)}{Q^1(k,j)} \\
+P(l = j-1 | k, j) &= \frac{e^{-(b+c)/RT}Z_{3'D}(i, j-1)Q'(i, j-1) + e^{-(2b + c)/RT}Z_{DD}(i+1, j-1)Q'(i+1, j-1)}{Q^1(k, j)}
+\end{split}
 \end{equation}
 
+Or we call the procedure again recursively for $l = j-1$ and $l=j-2$ with probability 
 \begin{equation}
+\frac{Q^1(k, j-1)e^{-b/RT}}{Q^1(k, j)}. 
+\end{equation} 
 
-\end{equation}
-
-\begin{equation}
-
-\end{equation}
-
-\begin{equation}
-
-\end{equation}
-
-The probabilities are normalized and sampled from to output the first
-pair. From then on, if a pairs $(h,l)$ is chosen, the algorithm
-chooses the type of structure that $(h,l)$ encloses with the
-probabilities:
+Note that when all the cases are summed, the numerator of the sum is
+the definition of $Q^1(k, j)$, so the probabilities sum to 1. This
+completes the description of the appropriate probabilities for the
+first branch of the algorithm, where we must determine a rightmost
+pair. For the second branch, we must choose what type of loop is
+forming between $i$ and $j$. Following the same theme, we take the
+components of $Q'(i,j)$ and turn them into probabilities:
 
 \begin{equation}
-
-\end{equation}
-
-\begin{equation}
-
+P(HAIRPIN | (i,j)) = \frac{Z_H(i, j)}{Q'(i, j)}
 \end{equation}
 
 \begin{equation}
-
+P(STACK | (i,j)) = \frac{Z_S(i,j)*Q'(i+1, j-1)}{Q'(i,j)}
 \end{equation}
 
 \begin{equation}
-
+P(INTERNAL | (i, j)) = \frac{QBI(i, j)}{Q'(i, j)}
 \end{equation}
 
-\begin{equation}
-
+\begin{equation} 
+P(MULTI | (i,j)) = 1 - P(HAIRPIN | (i,j)) - P(STACK | (i,j)) - P(INTERNAL | (i, j))
 \end{equation}
+
+Again, these probabilities sum to 1. For the hairpin, we know we have
+that pair and nothing else below it, so we store the pair and we are
+done. For the stack loop, we store the stack pair and then choose what
+kind of loop the inner stack loop makes. For the internal loop, we
+store the pair and choose what kind of loop the inner loop
+makes. Finally for the multi-loop we choose a rightmost $(k,l)$
+similar to how we did on the first step, and then we continue using
+the $Q(i+1,k-1)$ procedure for the left of the loop and $Q'(k,l)$
+procedure for the loop itself.
 
 The algorithm continues from there on in a similar fashion, choosing
 from each case according to their partition function. Our innovation
@@ -158,12 +163,40 @@ The need to sample large numbers of secondary structures makes a
 speedup very convenient, and that is what motivates our current
 expedition.
 
-\section{Methods}
+\section{Efficiency Improvements}
 
 Taking advantage of the empirical fact that the number of probable
 base pairs for an RNA strand tend to grow very slowly, we can restrict
 our traceback to only explore bases that we know can pair with one
-another.
+another. This is as simple as replacing the old recurrence relations with the
+new ones. The pairs are found much more quickly because whereas before
+we would check each $k$ from $i$ to $j$ and then have to go into a
+recursive loop. The probabilities we have are now:
+
+\begin{equation}
+\begin{split}
+P((k,j) | (i,j)) &= \frac{\left (  Q(i, k-1) + e^{-\frac{b(k-i)}{RT}} \right ) \
+   e^{-\frac{c}{RT} }Z_{ND}(k, j) Q'(k, j)  \\
++\ & \left (  Q(i, k-2) + e^{-\frac{b(k-i-1)}{RT}} \right )    e^{-\frac{b + c}{RT}}Z_{5'D}(k, j)Q'(k, j) \ }{Q(i,j)} \\
+p((k, j-1) | (i,j) &=\frac{\left (  Q(i, l-1) + e^{-\frac{b(l-i)}{RT}} \right ) \
+   e^{-\frac{c}{RT} }Z_{ND}(l, j-1) Q'(l, j-1)  \\
++\ & \left (  Q(i, l-2) + e^{-\frac{b(l-i-1)}{RT}} \right )   e^{-\frac{2b + c}{RT}}Z_{DD}(l, j-1)Q'(l, j-1) \  }{Q(i,j)}
+\end{split}
+\end{equation}
+
+Or we recursively call the same method for $(k, j-1)$ and $(k, j-2)$ with probability
+
+\begin{equation}
+\frac{Q(i, j-1)e^{-b/RT}}{Q(i,j)}
+\end{equation}
+
+Where $Q(i,j)$ is defined using the new recursion relation [TODO:
+  insert equation number] and we only use $k$'s that are found in
+$k(j)$ or $k(j-1)$. Note that when you sum these cases together the
+numerator is the definition of $Q(i,j)$ and therefore the
+probabilities sum to 1. The probabilities for each loop type stays the
+same, and pretty much the rest of the algorithm. The key speed up
+comes from not doing an $O(n)$ search on every recursive call.
 
 \section{Results}
 

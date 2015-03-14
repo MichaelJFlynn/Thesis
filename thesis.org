@@ -145,6 +145,8 @@ The energy function for a hairpin loop is a similar table lookup.
 * Improvements of Stochastic straceback
 ** O(n) probable states (proof?)
 ** Notes
+
+
 ** Citations
 Ding, Y., Chi Yu Chan, and Charles E. Lawrence. "RNA Secondary
 Structure Prediction by Centroids in a Boltzmann Weighted Ensemble."
