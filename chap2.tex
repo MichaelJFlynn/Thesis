@@ -1,6 +1,7 @@
 %% This is an example first chapter.  You should put chapter/appendix that you
 %% write into a separate file, and add a line \include{yourfilename} to
-%% main.tex, where `yourfilename.tex' is the name of the chapter/appendix file.
+%% main.tex, where `yourfilename.tex' is the name of the chapter/appen
+dix file.
 %% You can process specific files by typing their names in at the 
 %% \files=
 %% prompt when you run the file main.tex through LaTeX.
@@ -333,4 +334,44 @@ of $n$!
 
 
 
-\section{results}
+\section{Results}
+
+[TODO: include timing plots for new partition function]
+
+Calculating the partition function is still difficult, but it can be
+improved in the asymptotic case. The results show that the new
+computation has a large constant factor in the beginning of the
+algorithm. This could be related to the way the internal loop
+partition function is calculated, where we still have an $O(n^3)$
+algorithm until the number of nucleotides is greater than 30. This
+effect is relatively diminished as we get into the 1000s in term of
+base count, but it still is a large constant factor. As we increase
+the probability barrier, we get further reductions in runtime.
+
+[TODO: include plot with different times for different probability
+thresholds]
+
+A large part of the verification of an improved algorithm is showing
+that it produces acceptable results compared to the old algorithm, as
+you can see in the plot, our algorithm gives the same results up to 1
+part in 1 million [TODO: check this]. Increasing the probability
+threshold changes the results by [TODO: find out].
+
+[TODO: include plot of verification]
+
+\section{Conclusion}
+
+The partition function computation is hard and is a limiting factor in
+RNA structure prediction. However, given a heuristic to predict the
+base pairs, we can make the algorithm run faster. These improvements
+can be used in applications such as clustering based on our nestedness
+measure, using the partition function. These improvements also open up
+several possible branches for further investigation. Can a heuristic
+be generated before the partition function is computed, so that the
+pairs can be restricted and the computation done in much faster time
+than the $O(n^3)$ algorithm? Could this concept be applied to the
+pseudoknot algorithm to possibly speedup the computation for that as
+well? Applications of this sort could have tremendous impact on RNA
+secondary structure prediction, opening up incredible avenues of
+potential.
+
