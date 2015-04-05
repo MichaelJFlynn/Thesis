@@ -748,6 +748,11 @@ of $n$!
 * Further Improvement
 ** pseudoknot 
 
+* Pseudoknot
+** citations
+Dirks, Robert M., and Niles A. Pierce. "A Partition Function Algorithm
+for Nucleic Acid Secondary Structure including Pseudoknots." Journal
+of Computational Chemistry 24.13 (2003): 1664-677. Web.
 * Conclusion
 
 
