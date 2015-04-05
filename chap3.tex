@@ -222,3 +222,16 @@ out what error we expect] error. The number of samples that violate
 the bounds, do not deviate much from what we would expect from doing
 $n^2$ experiments, so I think we can confidently say that the new
 algorithm is making the correct computation.
+
+[TODO: Add demonstration of full RAM sampling]
+
+\section{Conclusion}
+
+The stochastic traceback algorithm can be sped up to allow large
+amounts of sampling such that the limiting computation factor is
+memory, not time. The applications of this improvement are that
+statistical algorithms like Ding \& Lawrence ([TODO: cite]) can
+minimize their statistical error. Nestor ([TODO: cite]) benefits
+greatly from these improvements because more structures mean more
+branches to the tree. In general the algorithm is useful because it
+removes unnecessary computation that was done before. 

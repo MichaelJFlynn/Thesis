@@ -30,5 +30,23 @@ of the transition states between local minima and these can tell you
 the kinetics of the structure. This technique was developed by [TODO:
 find Vienna people and cite them].
 
- Enabled by their stochastic sampling algorithm Ye Ding and
-Charles E. Lawrence clustering algorithms. [TODO: evaluate this].
+\section{Nestor}
+
+Enabled by the stochastic traceback algorithm to sample large numbers
+of states from the Boltzmann distribution, the Nestor algorithm,
+developed by Aalberts and Jannen, uses a different measure of
+distance based on the number of conflicting pairs between two
+structures. This measure is called nestedness and it is defined as
+$\Psi^{\mu\nu}$ between structures $\mu$ and $\nu$, such that
+
+\begin{equation}
+\Psi^{\mu\nu} = \sum_{k,l} \sum_{m,n \times (k,l)} P^{\mu}_{kl}
+P^{\nu}_{mn} 
+\end{equation}
+
+The algorithm works as follows: given an ensemble of structures $S$,
+find the most non-nested pair, $p$, from $S$ and sort the structures
+into 2 groups: structures compatible (non-crossing) with $p$ and not
+compatible (crossing) $p$. These two sub ensembles become the children
+of $S$ in a tree that is constructed by recursively splitting
+ensembles in the same manner.
