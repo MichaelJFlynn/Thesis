@@ -26,6 +26,9 @@ S. J., Jiao, X., Cox, C. & Turner, D. H. (1998). Thermodynamic parameters
 for an expanded nearest-neighbor model for formation of RNA duplexes
 with Watson-Crick base pairs. Biochemistry, 37(42), 14719-14735.
 
+Nussinov, Ruth, and Ann B. Jacobson. "Fast Algorithm for Predicting
+the Secondary Structure of Single-Stranded RNA." Proceedings of the
+National Academy of Sciences 77.11 (1980): 6309-313. Web.
 *** Writing
 
 The current free energy model of RNA is the result of evolution from
@@ -134,7 +137,7 @@ The energy function for a hairpin loop is a similar table lookup.
 - 2x1 internal loops
 - 1x1 (single mismatch
 
-
+  
 ** thermodynamics
 ** MFE vs clusters
 ** Robustness of RNA function to mutations (one of the list of unsolved problems in biophysics on Wikipedia)

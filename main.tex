@@ -32,7 +32,15 @@
 \usepackage{cmap}
 \usepackage{setspace}
 \usepackage[T1]{fontenc}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{caption}
+\graphicspath{ {figures/} }
 \pagestyle{plain}
+
+\DeclareCaptionFormat{myformat}{#1#2#3\hrulefill}
+\captionsetup[figure]{format=myformat}
 
 %% This bit allows you to either specify only the files which you wish to
 %% process, or `all' to process all files which you \include.
