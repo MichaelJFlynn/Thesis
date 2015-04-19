@@ -11,8 +11,9 @@
 \section{RNA Secondary Structure Prediction}
 
 In the nucleus of a cell, RNA is constantly being synthesized by
-transcribing sections of DNA onto a portable chain. These RNAs serve
-several functions inside of the cell, including acting as:
+transcribing sections of DNA onto a portable chain of the nucleic
+acids adenine, gaunine, cytozine, and uracil. These RNAs serve several
+functions inside of the cell, including acting as:
 
 \begin{description}
 \item[mRNA:] `messanger RNA', which travel to ribosomes to serve as blueprints for
@@ -114,15 +115,15 @@ double-stranded states in solution (see UV melting section).
 Indeed, much improvement was made over the hydrogen bond model by
 expanding it to include what is now called the Nearest Neighbor
 model. Experiments made it clear that energy of an RNA folding is not
-linearly dependent on the bonds that are made. There are significant
-interaction effects between nearby bases and bonds, this is called
-`sequence dependence', and there are polymer physics based energy
-terms that scale logarithmically with the length of a loop (this can
-be thought of as the energy it takes to bend the strand). To handle
-these interaction effects in a model, we approximate that they are
-contained within loop regions. We divide our structure into its loops
-and compute the energy of each loop, with a seperate energy model for
-each.
+just linearly dependent on the bonds that are made. There are
+significant interaction effects between nearby bases and bonds, this
+is called `sequence dependence', and there are polymer physics based
+energy terms that scale logarithmically with the length of a loop
+(this can be thought of as the energy it takes to bend the strand). To
+handle these interaction effects in a model, we approximate that they
+are contained within loop regions. We divide our structure into its
+loops and compute the energy of each loop, with a seperate energy
+model for each.
 
 \begin{figure}[t]
 \includegraphics[width=\textwidth]{full_loop_figure.eps}
@@ -136,130 +137,320 @@ each.
 \label{fig:loopFigure}
 \end{figure}
 
-\subsection{UV Melting Experiments} 
+\subsection{Loop Parameters} 
 
-The individual loop regions are given energies as parameters to linear
-regression models of free energy change in predictably folding
-strands. For example, the strand `GGGAAACCC' folds predictably into a
-structure with all the G's paired to the C's and a 3-A hairpin turn
-(because G's pair very strongly to C's and A's tend to resist
-pairing). Large amounts of identical strands are synthesized and put
-into solution and heated. As the solution heats, there is enough
-ambient energy to put all the strands in the unfolded, no-bonds
-state. RNA is an organic, aromatic molecule that absobes light in the
-UV spectrum in different amounts depending on whether it is in a
-folded state or unfolded state, so the UV absobtion is fit to a curve
-that then tells us about the relative concentrations of the
+One might wonder what the parameters, the terms, of this model would
+be. The model is simply that the energy of a structure, is the sum of it's loops:
+
+\begin{equation}
+E(s) = \sum_{l \in \text{loops}} E(l).
+\end{equation}
+
+For example for a very predictably folding strand 'GGGAAACCC' (G's
+really want to pair with C's and A's resist pairing), we can decompose
+the energy as such:
+
+\begin{equation}
+\Delta G \left ( \vcenter{\hbox{ \includegraphics[scale=0.25]{stem_loop.eps}}}
+ \right ) =
+\Delta G_S \left ( \vcenter{\hbox{\includegraphics[scale=0.25]{GGCC-loop.eps}}}
+\right ) +
+\Delta G_S \left ( \vcenter{\hbox{\includegraphics[scale=0.25]{GGCC-loop.eps}}}
+\right ) + 
+\Delta G_H \left (\vcenter{\hbox{\includegraphics[scale=0.25]{stem_loop_hairpin.eps}}}
+\right )
+\label{eq:decomposition}
+\end{equation}
+
+Where $\Delta G_S$ is the function for energy of a stack loop and
+$\Delta G_H$ is the function that gives you the energy of a hairpin
+loop.
+
+A model of loop energy should capture as much non-linearity as
+possible. For stack loops, the legal pairings limit the possible loops
+types. In fact, instead of worrying about how to model the loop's
+energy using polymer physics, we can just exhaust the possible stack
+loops, giving each a seperate parameter, i.e.
+
+\begin{equation}
+\Delta G_S \left ( \vcenter{\hbox{\includegraphics[scale=0.25]{GGCC-loop.eps}}}
+\right ) = \beta_{S1}, \  
+\Delta G_S \left ( \vcenter{\hbox{\includegraphics[scale=0.25]{GACU-loop.eps}}}
+\right ) = \beta_{S2}, \ 
+\Delta G_S \left ( \vcenter{\hbox{\includegraphics[scale=0.25]{AAUU-loop.eps}}}
+\right ) = \beta_{S3}, \ \dots
+\end{equation}
+
+Where $\beta_{S1},\  \beta_{S2},\  \dots,\  \beta_{Sn}$ are parameters to a linear
+regression model we fit to $\Delta G$ of `GGGAAACCC' and similar
+sequences (see section: UV Melting Experiments). This is what is done in practice.
+
+For the other type of loops, the sizes can grow unbounded, so simply
+having a term for each loop will not work. However, at least for
+internal and hairpin loops, in keeping with the nearest-neighbor
+philosophy, we can keep a term for every combination of the bases that
+start the loop, and then have a general term for computing the length,
+addressing these both directly we have:
+
+\paragraph{Hairpin Loop} 
+Loops with 3 and 4 unpaired bases are kept in special tables of
+triloop and tetraloop parameters, respectively. Each possible
+tetraloop and triloop has it's own energy determined by
+experiment. Beyond that, the general model is 
+\begin{align}
+\Delta G_H(n > 3) = & \Delta G_{init}(n) + \Delta
+G_{HStack} (\text{Initializing Stack}) \\
+&+ \Delta G (\text{bonuses}).
+\end{align}
+
+As you can see there is an initialization term and a stack term that
+are both fitted via linear regression. The bonus term is for various
+special loops that have been experimentally found to be more
+stable. It's outside the scope of this thesis to get into them, but
+they are specified in the paper by Mathews et al (1999).
+
+\paragraph{Internal Loop}
+Much like stack loops, internal loops are given individual parameters
+for $1 \times 1$, $1 \times 2$, $2 \times 2$, internal loops, where $n
+\times m$ denotes one arm of the loop having $n$ unpaired bases and
+the other having $m$. This results from extensive studies on the
+$\Delta G$'s of these internal loops. For the rest of internal loops
+there's a model of the form:
+
+\begin{align}
+ \Delta G_{int} ( n \times m ) = \Delta G_{init} (n + m) + \Delta G_{asymmetry} (| n - m |) \\
+& + \Delta G ( \text{bonuses}).
+\end{align}
+
+Where each term on the right is a regression parameter and the bonus
+term is similar to the hairpin bonus term for loops composed and ended
+with certain special kinds of bases determined experimentally to be
+more stable.
+
+\paragraph{Multi-Loops}
+Multi-Loops are harder to create experimental strands for and because
+of this there are no individual parameters for multi loops. In fact,
+for modeling mutli-loops we regress to a more simple linear model of the form:
+\begin{equation}
+\Delta G_{multi} = a_1 + b_1 n + c_1 h + \Delta G_{dangle}
+\end{equation}
+
+Where $a_1$ is a penalty for starting a mutl-loop, $n$ is the number
+of unpaired bases in the loop, $b_1$ is an energy penalty per unpaired
+base, $h$ is the number of pairs in the structure, $c_1$ is the energy
+bonus per pair, and $\Delta G_{dangle}$ is a term similar to stack
+loop terms which include the energy of the unit composed of a pair and
+its 2 adjacent unpaired bases, if it has them.
+
+[TODO: coaxial stacking?]
+
+\subsection{UV Melting experiments}
+
+\begin{figure}[h]
+\centering
+\includegraphics{MeltingGraph.eps}
+
+\caption{An example of the output of a UV melting experiment. We
+  should expect to see 2 levels of extinction in the graph, one
+  corresopoding to where single-strandedness is the equilibrium
+  condition of the strand and the other where double strandedness is
+  the equilibrium. As the temperature increases, the strand absorbs
+  more energy from the environment allowing it to escape the
+  double-stranded state and so there is a transition interval where as
+  the temperature increases the UV extinction goes from the
+  double-stranded extinction to the single stranded extinction.[TODO:
+    this graph has double stranded and single stranded extinction
+    switched]}
+\label{fig:UVMeltGraph}
+\end{figure}
+
+Loop regions are given energies as parameters to linear regression
+models of free energy change in predictably folding strands. For
+example, the strand `GGGAAACCC' folds predictably into a structure
+with all the G's paired to the C's and a 3-A hairpin turn (because G's
+pair very strongly to C's and A's tend to resist pairing) as seen in
+Equation \ref{eq:decomposition}. Large amounts of identical strands
+are synthesized and put into solution and heated. A two-state
+assumption is made, either the RNA is folded in a `double-stranded'
+state or unfolded in a `single-stranded' state. As the solution heats,
+there is enough ambient energy to put all the strands in the unfolded,
+no-bonds state. RNA is an organic, aromatic molecule that absobes
+light in the UV spectrum in different amounts depending on whether it
+is in a folded state or unfolded state, so the UV absobtion is fit to
+a curve that then tells us about the relative concentrations of the
 single-stranded vs. double-stranded state, which in turn tells us
 about the free energy change between the two at a given
 temperature. This free energy change is extracted and treated as a
 function of the loop variables, which are then fitted to a linear
 model over experiments on many different such strands.
 
-To continue with the example, we are creating a model:
-
-[TODO: example energy figure ]
-
-\begin{equation}
-\Delta G (GGGAAACCC) = \Delta G_s \left ( \begin{array}{c} 3' C C 5 ' \\ 5' G G 3 ' \end{array} \right ) +
-\Delta G_S \left ( \begin{array}{c} 3' C C 5 ' \\ 5' G G 3 ' \end{array} \right ) +
-\Delta G_H (G AAA C)
-\end{equation}
-
-Where $\Delta G_S $ is an individual parameter for the stack loop
-energy term and $\Delta G_H$ contains the terms for the hairpin energy
-term.
-
-Briefly, the loop types are:
-\begin{description}
-\item[Stacked Pairs] Two pairs right next to each other. The energies
-  for each possible legal pairing has been determined by linear
-  regression on experimental data (see UV Melting
-  Experiments). Finding an energy amounts to a table look-up of these
-  regression coefficients.
-\begin{equation}
-  \Delta G \left ( \begin{array}{c} 5' G C 3'  \\ 3' C G 5' \end{array} \right ) = -3.42\text{ (from Xia et al 1998) } 
-\end{equation}
-\item[Hairpin Loops] One pair enclosing an empty loop region. The
-  energy of this loop contains a term dependent on the length $n$, the
-  sequence of the closing stack, and several bonus terms for special
-  loops experimentally determined to be stable or unstable.
-  \begin{equation}
-    \begin{split}
-      \Delta G_{Hairpin} (n > 3) =& \Delta G_{init}(n) + \Delta G(\text{closing stack})\\
-      &+ \Delta G_{bonus} (\text{UU or GA first mismatch, but not AG} ) \\
-      &+ \Delta G_{bonus} (\text{special GU closure} ) \\
-      &+ \Delta G_{penalty} (\text{oligo-C loops}) \\
-      & \text{(from Mathews et al 1999) }
-    \end{split}
-  \end{equation}
-  For example (with $\bar{A}$ meaning base $A$ is unpaired):
-  \begin{equation}
-    \Delta G \left ( \begin{array}{c} 5' G \bar{A} \bar{A} 3' \\ 3' C \bar{A} \bar{A} 5' \end{array} \right )
-    = \Delta
-  \end{equation}
-
-
-\item[Internal Loops] Two pairs connected by a loop.
-  [TODO: add example]
-\item[Multi Loops] Mutiple pairs, each with their own stems. This has
-  a linear energy model, with an energy penalty for starting the loop,
-  an energy term for each base pair, and one for each unpaired base.
-
-\end{description}
-
-\section{UV Melting Experiments}
-
-The thermodynamic behavior of an RNA strand can be determined by
-subjecting it to melting curve analysis. When a folded RNA strand
-denatures, or unfolds because it is heated, its absorbtion of UV
-radiation changes. A physical model of this melting process can be
-developed to interpret these curves.
+For example, if we wanted to compute the free energy change of a
+strand and fit it to it's loop parameters:
 
 \begin{equation}
-\Delta G = \Delta H + T \Delta S
+\Delta G \left ( \vcenter{\hbox{ \includegraphics[scale=0.25]{stem_loop.eps}}}
+ \right ) =
+\Delta G_S \left ( \vcenter{\hbox{\includegraphics[scale=0.25]{GGCC-loop.eps}}}
+\right ) +
+\Delta G_S \left ( \vcenter{\hbox{\includegraphics[scale=0.25]{GGCC-loop.eps}}}
+\right ) + 
+\Delta G_H \left (\vcenter{\hbox{\includegraphics[scale=0.25]{GACA-hairpin.eps}}}
+\right ) 
 \end{equation}
+
+We synthesize large amounts of the strand 'GGGAAACCC', put them in
+solution and heat them and record their UV extinction. Observing the
+curve to be like something in Figure \ref{fig:UVMeltGraph}. The
+melting temperature $T_m$ is defined to be where the concentrations of
+single stranded and double stranded molecules are equal, and this is
+taken to be the inflection point of the graph in Figure
+\ref{fig:UVMeltGraph}. From there Van't Hoof analysis is performed,
+where the concentration, $C_T$, is varied and this follows a model of
+the form:
 
 \begin{equation}
-T_M^{-1} = \frac{R}{\Delta H} \log{(C_T/a)} + \frac{\Delta S}{R}
+  \frac{1}{T_m} = \frac{R}{\Delta H} \log{C_T} + \frac{\Delta S}{\Delta H}.
 \end{equation}
 
-The free energy of a loop structure, or rather its $\Delta G$ relative
-to the unfolded state,
+This equation comes from the relation $\Delta G = -RT \log{K_{eq}}$
+and plotting $1/T_m$ against $\log{C_T}$ and fitting a linear model
+gives us the parameters $\Delta S$ and $\Delta H$ from the slope and
+intercept and therefore $\Delta G$ through the relation
 
-\paragraph{Stacked Pairs}
+\begin{equation}
+\Delta G = \Delta H - T \Delta S.
+\end{equation}
 
-The energy parameters for stacked pair loops were computed in a series
-of optical melting experiments (estimating parameters by UV
-absorbtion) by Xia et al (1998). For each combination of 2 sets of 2
-paired bases, the change in energy at 37 Kelven was computed by
-fitting $\Delta H$ and $\Delta S$ to the data. [Todo: decide whether
-to have an in depth discussion of this]
-
-For GU, a non-cannonical base pair that happens nontheless, the free
-energy is calculated by subtracting the free energy of a CGUACG strand
-from the free energy of a CGUUGACG strand, both of whose free energies
-are determined by optical melting experiments.
+If we repeat this process over several strands, we can then fit the
+$\Delta G$'s to a linear model based on the many parameters described
+in the Loop Parameters section. From there, when we want to compute
+the energy of a folding, all we have to do is seperate it into loops
+and sum the energies of each based off the parameters of this model.
 
 
-\paragraph{Dangling ends and terminal mismatches}
+%Without the use of cool graphics, we might notate the above as:
+%
+%\begin{equation}
+%\Delta G (GGGAAACCC) = \Delta G_s \left ( \begin{array}{c} 3' C C 5 ' \\ 5' G G 3 ' \end{array} \right ) +
+%\Delta G_S \left ( \begin{array}{c} 3' C C 5 ' \\ 5' G G 3 ' \end{array} \right ) +
+%\Delta G_H (G AAA C)
+%\end{equation}
+%
+%Where $\Delta G_S $ is an individual parameter for the stack loop
+%energy term and $\Delta G_H$ contains the terms for the hairpin energy
+%term.
 
-[TODO: read serra \& turner 1995]
+\subsection{Example Energy Computation}
 
-bases adjacent to GU pairs are treated the same as bases adjacent to AU pairs
+\begin{figure}[t]
+  \includegraphics[width=\textwidth]{big_loop.eps}
 
-\paragraph{Hairpin loops}
+  \captionsetup{singlelinecheck=off}
+  \caption[.]{
+    This is one possible folding out of the $O(1.8^n)$ secondary
+    structures of the sequence
+    `AGGAGAAGCAGGAAACCUCAAAGAACCAACUCCA'.    
+  }
+  \label{fig:bigLoop}
+\end{figure}
 
-The energy function for a hairpin loop is a similar table lookup.
+Here's an example of the energy computation of a secondary structure,
+pictured in Figure \ref{fig:bigLoop}. There are 3 stack loop of the type:
+\begin{equation}
+  \Delta G \left ( \vcenter{\hbox{\includegraphics[scale=0.25]{GGCC-loop.eps}}}
+  \right ) = -3.26 \text{ kcal/mol},
+\end{equation}
+and one of each:
+\begin{align}
+  &\Delta G \left ( \vcenter{\hbox{\includegraphics[scale=0.25]{GACU-loop.eps}}}
+  \right ) = -2.35 \text{ kcal/mol},\\ 
+  &\Delta G \left ( \vcenter{\hbox{\includegraphics[scale=0.25]{AGUC-loop.eps}}}
+  \right ) = -2.35 \text{ kcal/mol},\\
+  &\Delta G \left ( \vcenter{\hbox{\includegraphics[scale=0.25]{UCAG-loop.eps}}}
+  \right ) = -2.08 \text{ kcal/mol}.
+\end{align}
+These are all lookups from linear regression parameters. Besides the
+stacks, there are 2 identical hairpins, an internal loop, an external
+loop, and a multi-loop. For the hairpins the energy can be looked up
+in a special parameter table designed specifically for hairpins with 3
+unpaired bases called triloops:
+\begin{align}
+  \Delta G \left ( \vcenter{\hbox{\includegraphics[scale=0.25]{GACA-hairpin.eps}}}
+  \right ) &= 5.8
+\end{align}
 
-[TODO: finish this]
+For the internal loop, there is a direct lookup for the $2 \times 2$
+mismatch in a table:
 
-- Tetraloop bonus
+\begin{align}
+  \Delta G \left ( \vcenter{\hbox{\includegraphics[scale=0.25]{GAAG-CAAC-internal-loop.eps}}}
+  \right ) = 0.5 \text{ kcals/mol}.
+\end{align}
 
-\paragraph{Bulge loops}
+The multibranch loop has 3 pairs and 2 unpaired bases. The energy is therefore:
 
-\paragraph{Internal loops}
-- 2x2 tandem mismatches
-- 2x1 internal loops
-- 1x1 (single mismatch
+\begin{align}
+  \Delta G \left (\vcenter{\hbox{\includegraphics[scale=0.25]{CAGCUAAC-multiloop.eps}}}
+  \right ) = 3.4 + 0*3 + 0.4*2 = 4.2 \text{ kcals/mol}.
+\end{align}
+
+If we sum up the contributions, we get that $\Delta G = -6.36 \text{
+  kcals/mol}$. The energy of the MFE state can be computed using
+software, and I find it to be $-3.06$ with just the first stem and a
+large hairpin. [TODO: figure out what is wrong, make ct file, find energy].
+
+\section{Critique of the Energy Model}
+
+The energy model of RNA is not perfect, notably so. It is complex,
+there are linear models, non-linear models, lookup tables, and
+bonuses. Complexity is a very undesirable quality for a model, it
+makes it hard to implement and hard for new researchers to get started
+in the field.  Not only that, but many parameters have very high
+error. For example, the initialization penalty for hairpin loops is
+supposed to be different for different hairpin lengths, but most of
+the terms aren't even $1\sigma$ away from each other. Because of this,
+it is not clear what advantage these extra parameters give, perhaps
+they could be reduced to one, to simplify the model greatly. Another
+problem is that the data of the original experiments has been lost, so
+no one can take a closer look at how well the parameters fit, and no
+one seems to be interested in running the experiments again. The only
+thing that seems to keep the current parameters in good standing is
+relatively solid results in prediction, with something like 80\% of
+base pairs correctly predicted. However, to make any progress from
+this point, it is essential to get the energy model correct. 
+
+If there was a list of big problems to tackle in RNA secondary
+structure prediction, fixing the energy model should be a top
+priority. The new model should be consistent and physically based and
+confirmed by experiments. Some groups have made progress on creating
+energy models for multi-loops that may perform better than the current
+parameters [TODO: insert aalberts plug]. However, none of these
+changes have been implemented in the software packages that currently
+hold the grand majority of the secondary structure prediction
+market. There are reasons for this, including the fact that the
+software is massive, complicated, and poorly documented. Perhaps a new
+energy model could usher in a better software framework for RNA
+prediction that has:
+
+\begin{enumerate}
+\item Better naming conventions, with function, variable, and source
+  file names describing precisely what they represent,
+\item Consistently documented source files, perhaps with a full manual
+  created with doxygen,  
+\item Simpler energy models, with less branching and complexity.
+\end{enumerate}
+
+This is not to belittle the efforts of those that implemented Unafold
+and RNAStructure, after all they accomplished the great feat of
+implementing these complex software suites. Instead, it is to note
+that the job is not done, and the items listed above are things that
+need to be accomplished.
+
+\section{Applications of RNA Structure Prediction}
+
+RNA Secondary structure has many clinical applications including in
+sequence design.
+
+[TODO: finish this section]
+
 
