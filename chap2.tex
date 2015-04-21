@@ -8,46 +8,86 @@ dix file.
 \chapter{Partition Function Computation and Improvements}
 \section{Introduction}
 
-As a quick review, the partition function for a thermodynamic system
-of fixed volume, in contact with an environment with temperature $T$,
-is
-
-\begin{equation} Z = \sum_s e^{E(s)/ RT } \end{equation}
-
+The partition function for a thermodynamic system of fixed volume, in
+contact with a heat reservior with absolute temperature $T$, is
+\begin{equation} Z = \sum_s e^{-E(s)/ RT }, \end{equation}
 where $s$ denotes a particular state of the system, $E(s)$ is the
 energy of that state, and $RT$ is the gas constant multiplied by the
 temperature, specified above. Each particular term in the sum is
 called that state's Boltzmann factor. The probability of a state is
 then said to be its Boltzmann factor divided by the partition
 function, or
+\begin{equation} P(s) = \frac{1}{Z}e^{-E(s)/RT}.  \end{equation}
+In our model an RNA strand is such a thermodynamic system, its
+secondary structure is its state, and the rest of the cell is the
+reservoir of heat. We assign each secondary structure an energy
+according to the free energy model described in Chapter 1. According
+to this model, the energy of a secondary structure is the sum of the
+energies of its loops. 
 
-\begin{equation} P(s) = \frac{e^{E(s)/RT}}{Z}.  \end{equation}
-
-For an RNA molecule, we want to compute the probability of a
-particular folding or group of foldings, so we treat it as a
-thermodynamic system and sum up the energies of each state, which is a
-particular folding. The energy that we assign to an RNA folding is
-determined by the Turner Free energy model, mentioned in the
-introduction. According to this model, the energy of an RNA folding is
-the sum of the energies of the loops that are created by the
-folding. These energies are added, for the most part, linearly. This
-means if the partition function for some small segment of the strand
-is computed, it will have the same contribution to the partition
-function of any larger segment that contains it. So we can spare
-ourselves from enumerating every single folding by using an approach
-that saves the results of these sub-computations in a table, such as
-dynamic programming.
+To compute the partition function we must sum up every possible
+secondary structure. There are many possible secondary structures, on
+the order of $1.8^n$ where $n$ is the sequence length. However, the
+computation of the partition function benefits greatly from the linear
+nature of the energy model: it allows us to recursively define the
+partition function. For example, say we have computed the full
+partition function of a strand of $n$ bases, define a function $Q$
+such that:
+\begin{equation}
+Q(i, j) = \text { sum of boltzmann factors for every structure contained between } i \text{ and } j.
+\end{equation}
+The full partition computation can therefore be represented as the
+function $Q$ acting on the bounding two bases $1$ and $n$: 
+\begin{equation}
+ Q(1, n) = \sum_{s \text{ on } [1,n]} e^{-E(s)/RT}.
+\end{equation}
+If we now extend the strand by attaching a small hairpin to the end,
+as pictured in Figure \ref{fig:attachedHairpin}, there is no need to
+go back and recompute the energy of every single secondary structure,
+rather we can just multiply the already-computed partition function by
+the boltzmann factor of the hairpin turn (let $E(h)$ be the hairpin
+energy) to get the new partition function:
+\begin{figure}[h]
+\includegraphics[width=\textwidth]{attachedHairpin.eps}
+\caption{Extending the strand by adding an attached hairpin adds the
+  energy of the hairpin to each structure. To compute the new
+  partition function $Q(1, n+5)$, we do not need to sum the energies
+  of all possible structures again, we can simply use the old value,
+  $Q(1,n)$, and multiply it by the Boltzmann factor of the
+  hairpin. This is the concept behind the dynamic programming
+  algorithm.}
+\label{fig:attachedHairpin}
+\end{figure}
+\begin{equation}
+Q(1, n + 5) = \sum_{s \text{ on } [1,n]} e^{-(E(s) + E(h))/RT} = Q(1, n)e^{-E(h)/RT}. 
+\end{equation}
+This replaces an exponential-time computation (the sum), with a
+constant time computation (multiplying the pre-computed $Q(1, n)$ with
+the energy term). In general, this technique allows us to compute the
+partition function efficiently, working up from $Q(1, 2)$ to
+$Q(1,n)$. In computer science this technique is called dynamic
+programming, a fancy name for the technique of storing the
+results of a computation in a table for later use.
 
 The dynamic programming algorithm for computing the partition function
-of an RNA strands has several versions. If you ignore psuedoknots, and
-if you make an approximation that internal loops will never exceed a
-certain length, there is a general agreement that the fastest
-algorithm runs in $O(n^3)$, where $n$ is the length of the strand. We
+of an RNA strands has several versions, depending on how in depth you
+go with the energy model. The simplest algorithms allow for only
+structures with nested base pairs. Nested means that the structure can
+be represented with the parenthesis, for example
+(((..((((....))))(((..)))..))), or without crossing pairs in expanded
+loop diagrams such as the ones in Figure
+\ref{fig:attachedHairpin}. Note that this kind of structure excludes
+pseudoknots.  If you ignore psuedoknots, which is standard in the
+field, and if you make an approximation that internal loops will never
+exceed a certain length, the fastest algorithm runs in $O(n^3)$. We
 believe that we can streamline this computation even more, taking
 advantage of the fact that empirically, the number of probable base
 pairs of a strand of length $n$ seems to grow like $n$, not
 $n^2$. This is the same result we used to speed up the stochastic
-traceback algorithm and [TODO: see if this actually works].
+traceback algorithm and potentially a partition function algorithm
+that includes pseudoknots. The algorithm will be presented in its
+simplest form, with more complicated versions available in the
+appendices.
 
 \section{Motivation}
 
@@ -90,7 +130,7 @@ formulated in 1990 by J.S. McCaskill in his landmark paper \emph{The
 Equilibrium Partition Function and Base Pair Binding Probabilities for
 RNA Secondary Structure} [TODO: cite?]. The formula is also presented
 better and explained well by a later paper by Dirks and Pierce in 2003
-(Dirks & Peirce 2003). Starting at the outermost layer of this
+(Dirks \& Peirce 2003). Starting at the outermost layer of this
 relation, the formula for the partition function of the strand from
 base $i$ to base $j$ is:
 
