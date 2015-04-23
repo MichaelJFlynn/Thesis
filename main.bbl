@@ -1,0 +1,65 @@
+\newcommand{\noopsort}[1]{} \newcommand{\printfirst}[2]{#1}
+  \newcommand{\singleletter}[1]{#1} \newcommand{\switchargs}[2]{#2#1}
+\begin{thebibliography}{10}
+
+\bibitem{ding2005rna}
+YE~Ding, Chi~Yu Chan, and Charles~E Lawrence.
+\newblock Rna secondary structure prediction by centroids in a boltzmann
+  weighted ensemble.
+\newblock {\em Rna}, 11(8):1157--1166, 2005.
+
+\bibitem{ding2003statistical}
+Ye~Ding and Charles~E Lawrence.
+\newblock A statistical sampling algorithm for rna secondary structure
+  prediction.
+\newblock {\em Nucleic acids research}, 31(24):7280--7301, 2003.
+
+\bibitem{dirks2003partition}
+Robert~M Dirks and Niles~A Pierce.
+\newblock A partition function algorithm for nucleic acid secondary structure
+  including pseudoknots.
+\newblock {\em Journal of computational chemistry}, 24(13):1664--1677, 2003.
+
+\bibitem{hofacker1998combinatorics}
+Ivo~L Hofacker, Peter Schuster, and Peter~F Stadler.
+\newblock Combinatorics of rna secondary structures.
+\newblock {\em Discrete Applied Mathematics}, 88(1):207--237, 1998.
+
+\bibitem{mathews1999expanded}
+David~H Mathews, Jeffrey Sabina, Michael Zuker, and Douglas~H Turner.
+\newblock Expanded sequence dependence of thermodynamic parameters improves
+  prediction of rna secondary structure.
+\newblock {\em Journal of molecular biology}, 288(5):911--940, 1999.
+
+\bibitem{mccaskill1990equilibrium}
+John~S McCaskill.
+\newblock The equilibrium partition function and base pair binding
+  probabilities for rna secondary structure.
+\newblock {\em Biopolymers}, 29(6-7):1105--1119, 1990.
+
+\bibitem{nussinov1980fast}
+Ruth Nussinov and Ann~B Jacobson.
+\newblock Fast algorithm for predicting the secondary structure of
+  single-stranded rna.
+\newblock {\em Proceedings of the National Academy of Sciences},
+  77(11):6309--6313, 1980.
+
+\bibitem{xia1998thermodynamic}
+Tianbing Xia, John SantaLucia, Mark~E Burkard, Ryszard Kierzek, Susan~J
+  Schroeder, Xiaoqi Jiao, Christopher Cox, and Douglas~H Turner.
+\newblock Thermodynamic parameters for an expanded nearest-neighbor model for
+  formation of rna duplexes with watson-crick base pairs.
+\newblock {\em Biochemistry}, 37(42):14719--14735, 1998.
+
+\bibitem{zuker1989finding}
+Michael Zuker et~al.
+\newblock On finding all suboptimal foldings of an rna molecule.
+\newblock {\em Science}, 244(4900):48--52, 1989.
+
+\bibitem{zuker1981optimal}
+Michael Zuker and Patrick Stiegler.
+\newblock Optimal computer folding of large rna sequences using thermodynamics
+  and auxiliary information.
+\newblock {\em Nucleic acids research}, 9(1):133--148, 1981.
+
+\end{thebibliography}

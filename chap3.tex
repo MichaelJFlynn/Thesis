@@ -5,133 +5,139 @@
 %% \files=
 %% prompt when you run the file main.tex through LaTeX.
 \chapter{Stochastic Traceback Algorithm and Improvements}
+
 \section{Introduction}
 
 The stochastic traceback algorithm was introduced by Ye Ding and
-Charles Lawrence (2003) as a means to explore the energy landscape of
-RNA by sampling structures according to their Boltzmann
-probabilities. This was important because the minimum free energy
-structure was very sensitive to errors in the parameters of the free
-energy model, and although algorithms existed for generating
+Charles Lawrence \cite{ding2003statistical} as a means to explore the
+energy landscape of RNA by sampling structures according to their
+Boltzmann probabilities. This was important because the minimum free
+energy structure was very sensitive to errors in the parameters of the
+free energy model, and although algorithms existed for generating
 suboptimal structures, they either sampled a very limited set of
-states (Zuker 1989), or had exponential runtime and did not correspond
-to the physical ensemble of states (Wuchty et al 1999).
+states \cite{zuker1989finding}, or had exponential runtime and the
+output did not have the same distribution as the physical ensemble of
+states \cite{wuchty199complete}. Structures sampled according to this
+algorithm can be clustered into macrostates, whos properties can be
+examined.
 
-The method uses the partition function algorithm as a forward-fill
-step, then it traces back over the contents of the tables calculated
-during that algorithm. Specifically, the tables $Q(i,j)$, $Q'(i,j)$,
-etc. now contain information about the conditional probabilities of
-bases pairing. The general principle of the backwards trace is that,
+The method first computes the partition function, then it ``traces
+back'' over the contents of the tables calculated during that
+algorithm. Specifically, the tables $Q(i,j)$, $Q^b(i,j)$, etc. now
+contain information about the conditional probabilities of bases
+pairing. Starting from a bare, undetermined strand at the top of the
+recurrence relations, the stochastic traceback samples pairs between
+bases until a structure is formed such that its probability of it
+being created by the algorithm is equal to its boltzmann weight
+$e^{-E(s)/RT}/Z$.
+
+The general principle of the backwards trace is that,
 presented with several possibilities for the structure along a
 sequence from $i$ to $j$, the sampling probability for a case is the
 contribution to the partition function by that case's partition
-function. 
+function. For example, since the partition function $Q(i, j)$ is defined:
+\begin{equation}
+Q(i,j) = \overbrace{e^{-b(j-i+1)/RT}}^{\text{empty}} + \overbrace{\sum_{\substack{ d,e \\ i \leq d < e \leq j}}Q(i, d - 1) Q^b(d, e) e^{-b(j-e)/RT}}^{\text{rightmost pair}},
+\end{equation}
+during a stochastic traceback the probability of sampling a pairless
+strand, and the probability of drawing a rightmost pair $(d,e)$ and
+recursing from there are:
+\begin{align}
+P(\text{empty} | i, j) &= \frac{e^{-b(j-i+1)/RT} }{Q(i,j)} \\ 
+P(\text{pair } (d,e) | i, j ) &= \frac{ Q(i, d-1) Q^b(d,e) e^{-b(j-e)/RT}}{Q(i,j)}. 
+\end{align}
+Notice that when summed together for every possible case of $(d,e)$,
+the numerator becomes the definition of $Q(i,j)$, so these
+probabilities are naturally normalized. Likewise, since $Q^b(i,j)$ is
+defined as 
+\begin{equation}
+\begin{split}
+ Q^b(i, j) =& \overbrace{e^{-E_h(i,j)/RT}}^{\text{hairpin}} +
+ \overbrace{e^{-E_s(i, j)/RT} Q^b(i+1, j-1)}^{\text{stack}} \\ 
+& + \overbrace{\sum_{\substack{d,e \\ i < d< e< j}} e^{-E_i(i, d, e, j)/RT}Q^b(d,e)}^{\text{internal}} \\ 
+& + \overbrace{e^{-a/RT} \sum_{\substack{d,e \\ i < d< e< j}} Q(i+1, d-1) Q^b(d,e) e^{-b(j-e-1)/RT}}^{\text{multiloop}}.
+\end{split}
+\end{equation}
+The probability of sampling a hairpin, stack loop, internal loop, and multiloop are:
+\begin{align}
+P(\text{hairpin} | i, j) &= \frac{ e^{-E_h(i,j)/RT} } { Q^b(i,j) } \\
+P(\text{stack} | i, j ) &= \frac{ e^{-E_s(i,j)/RT} Q^b(i+1, j-1) } {Q^b(i,j)}  \\
+P(\text{internal } (d, e) | i, j) &= \frac{e^{-E_i(i, d, e, j)/RT} Q^b(d,e)}{Q^b(i,j) }\\
+P(\text{multi }(d,e) |i, j ) &= \frac{ e^{-a/RT} Q(i + 1, d-1) Q^b(d,e) e^{-b(j-e-1)/RT} } { Q^b(i,j)} 
+\end{align}
+Notice for the same reason as before, all the probabilities for the
+$Q^b$ recursion sum to one. In general, the stochastic traceback can
+be readily understood by examining the recurrence relation figures
+from chapter 2: Figure \ref{fig:recurrenceRelationsQij} and Figure
+\ref{fig:recurrenceRelationsQbij}. We start at the $Q$ recursion for
+the strand, we may pick a pair and add it to the structure, but in
+general, for every pair added we recurse down to $Q^b$ on that region
+to determine the structure below that pair. For every structure left
+undetermined, we use the probabilities from $Q$ to determine that
+structure and so on. 
 
-[TODO: figure of stochastic traceback algorithm]
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{stochastic-alg-diagram.jpg}
+\caption{Flowchart of the algorithm from Ding and Lawrence's paper
+  \cite{ding2003statistical}. Basically: if we are on a $Q(i,j)$
+  recursion, sample either an empty section or a rightmost pair. For
+  $Q^b$ choose a loop type and corresponding pairs if
+  applicable. After both cases recurse down appropriately so that
+  $Q^b$ is drawn for any pair created and $Q$ for any open region.}
+\label{fig:stoch-flowchart}
+\end{figure}
 
-The specific algorithm requires two stack data structures. A stack can
-be thought of as a literal "stack", like papers stacked on a desk,
+The algorithm's implementation uses two stack data structures. A stack
+can be thought of as a literal "stack", like papers stacked on a desk,
 except instead of paper their are items of data. There are two basic
 operations, one to put an item on the top of the stack, and another to
 retrieve an item off the top. These are called "push" and "pop"
 operations, respectively, in Computer Science. The data items we will
 be pushing on to the first stack, A, are of the form $\{(i,j), b\}$
 where $i$ and $j$ are indexes along the strand and $b$ is either
-$True$ if we have determined that $i$ and $j$ are paired, or $False$
+$true$ if we have determined that $i$ and $j$ are paired, or $false$
 otherwise. The second stack, B, is where we'll collect pairs and
 unpaired bases for one sample.
 
-The initialization of the algorithm is to push $\{(1, n), False\}$
+\begin{figure}[h]
+\bfseries\small
+The initialization of the algorithm is to push $\{(1, n), false\}$
 onto the stack. From there the algorithm repeats the following steps:
-
 \begin{enumerate}
 \item Pop an element, $\{i, j, b\}$ off stack A.
-\item Case b is $False$:
+\item Case b is $false$:
 \begin{enumerate}
-\item Pick a $(k, l)$ where $i \leq k < l \leq j$ which is to be the rightmost pair on the segment, with the appropriate probability
-\item Push $\{(i, k-1), False\}$ onto stack A, because the structures to the left of $(k,l)$ are not yet determined
-\item Push $\{(k, l), True\}$ onto stack A, because we need to determine what type of loop $(k,l)$ encloses
-\item Push $(k,l)$ onto stack B as a pair
-\item Push all $m$ such  that $l < m \leq j$ onto stack B as unpaired bases, as $(k,l)$ is the rightmost pair
+\item ($Q(i,j)$ recursion) Pick empty or pair $(k,l)$ with
+  probabilities listed above. If empty, push all pairs on $[i, j]$
+  inclusive onto B as unpaired bases, if not push $\{(d, e), true\}$
+  and $\{(i, d-1), false\}$ onto A.
 \end{enumerate}
-\item Case b is $True$:
+\item Case b is $true$:
 \begin{enumerate}
-\item Choose what type of loop $(i,j)$ is from \{HAIRPIN, STACK, BULGE/INTERIOR, MULTI-LOOP\} with the appropriate probability
-\item Push the appropriate elements onto the stack for that loop type, see figure.
+\item ($Q^b(i,j)$ recursion) Choose what type of loop $(i,j)$ is from
+  the probabilities listed above.
+\item Push the appropriate elements onto the stack for that loop type,
+  see Figure \ref{fig:stoch-flowchart}.
 \end{enumerate}
-\item If stack A is empty, the pairs and unpaired bases in stack B become a sampled structure. Reinitialize for additional samples.
+\item If stack A is empty, the pairs and unpaired bases in stack B
+  become a sampled structure. Reinitialize for additional samples.
 \end{enumerate}
 
-In the preceding algorithm, I have reference the "appropriate
-probability" for each of the different choices. As stated before,
-these are the contributions to the partition function by these
-cases. In the framework of UNAfold, with the matrices $Q(i,j)$,
-$Q'(i,j)$, etc., to pick an initial $(k,l)$ pair, the specific
-probabilities would be:
+\caption{The stochastic traceback algorithm is implemented by pushing
+  the recursive elements back onto the stack to sample a full structure. }
+\label{fig:stochastic-pseudocode}
+\end{figure}
 
+The algorithm displayed in Figure \ref{fig:stochastic-pseudocode} is
+what gets the job done. The probability of the structure is equal to
+the product of the probabilities that determined its pairs and empty
+regions, but if you follow the recursion all the way down you see that
+this results in just the boltzmann factor for the structure:
 \begin{equation}
-P(k | (i,j)) = \frac{\left ( Q(i, k-1) + e^{-\frac{b(k-i)}{RT} }\right ) Q^1(k, j)}{Q(i,j)}
+P(s) = \prod_{\text{cases}} \frac{P(\text{case})}{Q(\text{case})} =
+\frac{1}{Z} e^{-E(s)/RT}.
 \end{equation}
-
-which is the probability to pick the $k$, where $i \leq k < j$. Note
-that when summed over all values of $k$, the numerator becomes the
-definition of $Q(i,j)$, therefore these probabilities sum to 1. To
-pick $l$ on the range from $i$ to $j$, we use the definition of
-$Q^1(k, j)$ in a similar way:
-
-\begin{equation}
-\begin{split}
-P(l = j | k, j) &= \frac{e^{-c/RT}Z_{ND}(k, j)Q'(k,j) + e^{-(b+c)/RT}Z_{5'D}(k+1, j)Q'(k+1, j)}{Q^1(k,j)} \\
-P(l = j-1 | k, j) &= \frac{e^{-(b+c)/RT}Z_{3'D}(i, j-1)Q'(i, j-1) + e^{-(2b + c)/RT}Z_{DD}(i+1, j-1)Q'(i+1, j-1)}{Q^1(k, j)}
-\end{split}
-\end{equation}
-
-Or we call the procedure again recursively for $l = j-1$ and $l=j-2$ with probability 
-\begin{equation}
-\frac{Q^1(k, j-1)e^{-b/RT}}{Q^1(k, j)}. 
-\end{equation} 
-
-Note that when all the cases are summed, the numerator of the sum is
-the definition of $Q^1(k, j)$, so the probabilities sum to 1. This
-completes the description of the appropriate probabilities for the
-first branch of the algorithm, where we must determine a rightmost
-pair. For the second branch, we must choose what type of loop is
-forming between $i$ and $j$. Following the same theme, we take the
-components of $Q'(i,j)$ and turn them into probabilities:
-
-\begin{equation}
-P(HAIRPIN | (i,j)) = \frac{Z_H(i, j)}{Q'(i, j)}
-\end{equation}
-
-\begin{equation}
-P(STACK | (i,j)) = \frac{Z_S(i,j)*Q'(i+1, j-1)}{Q'(i,j)}
-\end{equation}
-
-\begin{equation}
-P(INTERNAL | (i, j)) = \frac{QBI(i, j)}{Q'(i, j)}
-\end{equation}
-
-\begin{equation} 
-P(MULTI | (i,j)) = 1 - P(HAIRPIN | (i,j)) - P(STACK | (i,j)) - P(INTERNAL | (i, j))
-\end{equation}
-
-Again, these probabilities sum to 1. For the hairpin, we know we have
-that pair and nothing else below it, so we store the pair and we are
-done. For the stack loop, we store the stack pair and then choose what
-kind of loop the inner stack loop makes. For the internal loop, we
-store the pair and choose what kind of loop the inner loop
-makes. Finally for the multi-loop we choose a rightmost $(k,l)$
-similar to how we did on the first step, and then we continue using
-the $Q(i+1,k-1)$ procedure for the left of the loop and $Q'(k,l)$
-procedure for the loop itself.
-
-The algorithm continues from there on in a similar fashion, choosing
-from each case according to their partition function. Our innovation
-is to reduce the number of unnecesary computations. The partition
-function has already been calculated, so we already know which bases
-that might be paired and which bases are almost certainly not
-paired. By only checking the pairs that we know can happen, we see a
-large speedup.
 
 \section{Motivation}
 
@@ -168,37 +174,25 @@ expedition.
 Taking advantage of the empirical fact that the number of probable
 base pairs for an RNA strand tend to grow very slowly, we can restrict
 our traceback to only explore bases that we know can pair with one
-another. This is as simple as replacing the old recurrence relations with the
-new ones. The pairs are found much more quickly because whereas before
-we would check each $k$ from $i$ to $j$ and then have to go into a
-recursive loop. The probabilities we have are now:
-
-\begin{equation}
-\begin{split}
-P((k,j) | (i,j)) &= \frac{\left (  Q(i, k-1) + e^{-\frac{b(k-i)}{RT}} \right ) \
-   e^{-\frac{c}{RT} }Z_{ND}(k, j) Q'(k, j)  \\
-+\ & \left (  Q(i, k-2) + e^{-\frac{b(k-i-1)}{RT}} \right )    e^{-\frac{b + c}{RT}}Z_{5'D}(k, j)Q'(k, j) \ }{Q(i,j)} \\
-p((k, j-1) | (i,j) &=\frac{\left (  Q(i, l-1) + e^{-\frac{b(l-i)}{RT}} \right ) \
-   e^{-\frac{c}{RT} }Z_{ND}(l, j-1) Q'(l, j-1)  \\
-+\ & \left (  Q(i, l-2) + e^{-\frac{b(l-i-1)}{RT}} \right )   e^{-\frac{2b + c}{RT}}Z_{DD}(l, j-1)Q'(l, j-1) \  }{Q(i,j)}
-\end{split}
-\end{equation}
-
-Or we recursively call the same method for $(k, j-1)$ and $(k, j-2)$ with probability
-
-\begin{equation}
-\frac{Q(i, j-1)e^{-b/RT}}{Q(i,j)}
-\end{equation}
-
-Where $Q(i,j)$ is defined using the new recursion relation [TODO:
-  insert equation number] and we only use $k$'s that are found in
-$k(j)$ or $k(j-1)$. Note that when you sum these cases together the
-numerator is the definition of $Q(i,j)$ and therefore the
-probabilities sum to 1. The probabilities for each loop type stays the
-same, and pretty much the rest of the algorithm. The key speed up
-comes from not doing an $O(n)$ search on every recursive call.
-
-\section{Results}
+another. This is as simple as replacing the old recurrence relations
+with the new ones. For example during a $Q(i,j)$ state of the
+recursion there would be probabilities of:
+\begin{align}
+P(\text{empty} | i, j) &= \frac{e^{-b(j-i+1)/RT}}{Q(i,j)}\\
+P(\text{goto } Q^m | i, j) &= \frac{Q^m(i, j) }{Q(i, j) }.
+\end{align}
+For a $Q^m$ state:
+\begin{align}
+P(\text{continue} | i, j) = \frac{Q^m(i, j -1) e^{-b/RT}} {Q^m(i, j) }\\
+P(\text{pair } (k, j) | i, j) = \frac{Q(i, k - 1) Q^b(k, j) } {Q^m(i,j) }.
+\end{align}
+And finally for $Q^b(i, j)$:
+\begin{align}
+P(\text{hairpin} | i, j) &= \frac{ e^{-E_h(i,j)/RT} } { Q^b(i,j) } \\
+P(\text{stack} | i, j ) &= \frac{ e^{-E_s(i,j)/RT} Q^b(i+1, j-1) } {Q^b(i,j)}  \\
+P(\text{internal } (d, e) | i, j) &= \frac{e^{-E_i(i, d, e, j)/RT} Q^b(d,e)}{Q^b(i,j) }\\
+P(\text{goto } Q^m |i, j ) &= \frac{ e^{-a/RT} Q^m(i,j) } { Q^b(i,j)}. 
+\end{align}
 
 As one can see from the tables, the speedup is enormous. For randomly
 sampled sequences up to lengths in the thousands, the old stochastic
@@ -217,7 +211,7 @@ What we would expect to see from these plots, is that for a given
 base, we would expect to see it pair with other bases with
 probabilities given by the partition function as one can see. Of
 course there is sampling error, so each bin represents a sampling from
-a Bernoulli distribution. For n^2 samples, we would expect [Todo: find
+a Bernoulli distribution. For $n^2$ samples, we would expect [Todo: find
 out what error we expect] error. The number of samples that violate
 the bounds, do not deviate much from what we would expect from doing
 $n^2$ experiments, so I think we can confidently say that the new

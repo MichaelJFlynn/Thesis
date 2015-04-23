@@ -449,12 +449,10 @@ reserved.\par\permission}}
 %% a macro to change the (expanded) argument to uppercase.
 \def\maketitle{\begin{titlepage}
 \large
-\vskip
+\par 
 {\def\baselinestretch{1.2}\Large\bf \choosecase{\@title} \par}
 {\Large  \choosecase{\@author}}
 \par
-\@prevdegrees
-\par\baselinestrech
 \choosecase{A Thesis} \\
 \choosecase{submitted in partial fulfillment} \\
 \choosecase{of the requirements for the} \\
@@ -464,7 +462,7 @@ reserved.\par\permission}}
 WILLIAMS COLLEGE\\ 
 Williamstown, MA
 \par
-\vskip 3
+
 
 
 \end{titlepage}}

@@ -53,7 +53,7 @@ the secondary structure of an RNA molecule is a different task than
 finding the primary structure of RNA because there is no single
 solution for one chemical chain. For an individual RNA molecule there
 are many valid pairings, in fact for a sequence of length $n$ there
-are $O(1.8^n)$ secondary structures [TODO: cite]. 
+are $O(1.8^n)$ secondary structures \cite{hofacker1998combinatorics}. 
 
 To find which of these structures the molecule is likely to assume in
 nature, we turn to statistical mechanics. We approximate the RNA
@@ -95,22 +95,22 @@ double-stranded states in solution (see UV melting section).
 %% historical notes and such
  The first energy models developed by researchers awarded energy
  bonuses to pairs formed. One of the first papers by Nussinov and
- Jacobson (1980) awarded the same amount of points to A-U and G-C
- pairs and found the MFE state, so the algorithm reduced to finding
- the legal folding with the most base pairs. After, it was discovered
- exprimentally that G-C pairs are more stable than A-U pairs. Because
- of this, in further iterations the energy would be determined by
- counting hydrogen bonds of cannonically paired bases, assigning each
- -1 kcal/mol of free energy. This would mean that GC pairs are given
- -3 kcals/mol, AU and GU pairs are both given -2. The algorithm
- developed for this model minimized the free energy. Both this
- algorithm and the previous one had elementary dynamic programming
- solutions. They were useful models to use as a baseline, however,
- even the second iteration was not very accurate, on average only
- 20.5\% of known base pairs are correctly predicted. Later energy
+ Jacobson \cite{nussinov1980fast} awarded the same amount of points to
+ A-U and G-C pairs and found the MFE state, so the algorithm reduced
+ to finding the legal folding with the most base pairs. After, it was
+ discovered exprimentally that G-C pairs are more stable than A-U
+ pairs. Because of this, in further iterations the energy would be
+ determined by counting hydrogen bonds of cannonically paired bases,
+ assigning each -1 kcal/mol of free energy. This would mean that GC
+ pairs are given -3 kcals/mol, AU and GU pairs are both given -2. The
+ algorithm developed for this model minimized the free energy. Both
+ this algorithm and the previous one had elementary dynamic
+ programming solutions. They were useful models to use as a baseline,
+ however, even the second iteration was not very accurate, on average
+ only 20.5\% of known base pairs are correctly predicted. Later energy
  models would use it as a control for the hypothesis that they
- increased secondary structure prediction accuracy (Mathews et al
- 1999).
+ increased secondary structure prediction accuracy
+ \cite{mathews1999expanded}.
 
 Indeed, much improvement was made over the hydrogen bond model by
 expanding it to include what is now called the Nearest Neighbor
@@ -227,7 +227,7 @@ As you can see there is an initialization term and a stack term that
 are both fitted via linear regression. The bonus term is for various
 special loops that have been experimentally found to be more
 stable. It's outside the scope of this thesis to get into them, but
-they are specified in the paper by Mathews et al (1999).
+they are specified in the paper by Mathews et al \cite{mathews1999expanded}.
 
 \paragraph{Internal Loop}
 Much like stack loops, internal loops are given individual parameters
@@ -302,7 +302,8 @@ single-stranded vs. double-stranded state, which in turn tells us
 about the free energy change between the two at a given
 temperature. This free energy change is extracted and treated as a
 function of the loop variables, which are then fitted to a linear
-model over experiments on many different such strands.
+model over experiments on many different such strands
+\cite{xia1998thermodynamic}.
 
 For example, if we wanted to compute the free energy change of a
 strand and fit it to it's loop parameters:

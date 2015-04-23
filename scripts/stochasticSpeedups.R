@@ -8,4 +8,4 @@ data1$type[which(data1$type == "stochastic")] = "oldstochastic"
 timingData = rbind(data1, data2)
 timingData = subset(timingData, type != "partition")
 
-p = ggplot(data = data2, aes(x = n, y = time, color = type)) + geom_point()
+p = ggplot(data = timingData, aes(x = n, y = time, color = type)) + geom_point()

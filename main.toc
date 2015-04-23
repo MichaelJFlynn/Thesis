@@ -1,0 +1,35 @@
+\contentsline {chapter}{\numberline {1}Introduction}{11}
+\contentsline {section}{\numberline {1.1}RNA Secondary Structure Prediction}{11}
+\contentsline {section}{\numberline {1.2}The Energy Model of RNA}{13}
+\contentsline {subsection}{\numberline {1.2.1}Loop Parameters}{15}
+\contentsline {paragraph}{Hairpin Loop}{16}
+\contentsline {paragraph}{Internal Loop}{17}
+\contentsline {paragraph}{Multi-Loops}{17}
+\contentsline {subsection}{\numberline {1.2.2}UV Melting experiments}{18}
+\contentsline {subsection}{\numberline {1.2.3}Example Energy Computation}{20}
+\contentsline {section}{\numberline {1.3}Critique of the Energy Model}{22}
+\contentsline {section}{\numberline {1.4}Applications of RNA Structure Prediction}{23}
+\contentsline {chapter}{\numberline {2}Partition Function Computation and Improvements}{25}
+\contentsline {section}{\numberline {2.1}Introduction}{25}
+\contentsline {section}{\numberline {2.2}Motivation}{28}
+\contentsline {section}{\numberline {2.3}The Computation}{30}
+\contentsline {section}{\numberline {2.4}Efficient Partition Function}{33}
+\contentsline {section}{\numberline {2.5}Results}{36}
+\contentsline {section}{\numberline {2.6}Conclusion}{36}
+\contentsline {chapter}{\numberline {3}Stochastic Traceback Algorithm and Improvements}{39}
+\contentsline {section}{\numberline {3.1}Introduction}{39}
+\contentsline {section}{\numberline {3.2}Motivation}{43}
+\contentsline {section}{\numberline {3.3}Efficiency Improvements}{44}
+\contentsline {section}{\numberline {3.4}Conclusion}{46}
+\contentsline {chapter}{\numberline {4}Nestor and Clustering}{47}
+\contentsline {section}{\numberline {4.1}Motivation}{47}
+\contentsline {section}{\numberline {4.2}Nestor}{48}
+\contentsline {chapter}{\numberline {5}Reactivity Experiments}{49}
+\contentsline {section}{\numberline {5.1}Methods}{49}
+\contentsline {chapter}{\numberline {6}Pseudoknot Algorithm}{51}
+\contentsline {section}{\numberline {6.1}Introduction}{51}
+\contentsline {section}{\numberline {6.2}Derivation}{52}
+\contentsline {chapter}{\numberline {7}Conclusion}{55}
+\contentsline {chapter}{\numberline {A}UNAfold Implementation of Partition Function Improvements}{57}
+\contentsline {section}{\numberline {A.1}New Q(i,j) derivation}{57}
+\contentsline {section}{\numberline {A.2}Derivation of new Q'(i, j) formula}{60}

@@ -1,0 +1,176 @@
+\chapter{UNAfold Implementation of Partition Function Improvements}
+
+Note the terms $Z_{ND}$, $Z_{3'D}$, $Z_{5'D}$, and $Z_{DD}$ are extra
+free energy terms corresponding to 'dangle energies' which are the
+results of an experiment later implemented in the model to improve it
+from the standard energy model. In addition there are AU penalty terms
+appended to where pairs are made, as AU and GU pairs have penalties
+associated with forming. These additional energy terms improve the
+model's predictive ability and bring the model closer to the "truth",
+however it unfortunately makes the partition function seem very
+threatening.
+
+
+\section{New Q(i,j) derivation}
+
+In UNAfold, we have that the old recurrence relations were as follows:
+
+\begin{equation}
+Q(i,j) = \sum_{k=i}^j \left ( Q(i, k-1) + e^{-\frac{b(k-i)}{RT}}  \right )Q^1(k, j)
+\end{equation}
+where 
+\begin{equation}
+\begin{split}
+Q^1(i, j) = \ \ & Q^1(i, j - 1) e^{-\frac{b}{RT}}  \\
+ +\ & e^{-\frac{c}{RT} }Z_{ND}(i, j) Q'(i, j)  \\
++\ & e^{-\frac{b + c}{RT}}Z_{5'D}(i + 1, j)Q'(i + 1, j)  \\
++\ &  e^{-\frac{b + c}{RT}}Z_{3'D}(i, j-1)Q'(i, j - 1)  \\
++\ &  e^{-\frac{2b + c}{RT}}Z_{DD}(i + 1, j-1)Q'(i + 1, j-1) 
+\end{split}
+\end{equation}
+\noindent
+We can expand the recursive definition of $Q^1(i,j)$:
+
+\begin{equation}
+\begin{split}
+Q^1(i, j) = \sum_{k' = i + 1}^j e^{-\frac{b(j - k')}{RT} } \bigg [ \ 
+  & e^{-\frac{c}{RT} }Z_{ND}(i, k') Q'(i, k') \\
+ +\ & e^{-\frac{b + c}{RT}}Z_{5'D}(i + 1, k')Q'(i + 1, k') \\ 
++\  & e^{-\frac{b + c}{RT}}Z_{3'D}(i, k'-1)Q'(i, k' - 1) \\
++\  & e^{-\frac{2b + c}{RT}}Z_{DD}(i + 1, k'-1)Q'(i + 1, k'-1) \   \bigg ]
+\end{split}
+\end{equation}
+\noindent
+Plugging this into $Q(i,j)$ we get:
+
+\begin{equation}
+\begin{split}
+Q(i, j) = \sum_{k= i}^j\ \sum_{k' = k + 1}^j \left (  Q(i, k-1) + e^{-\frac{b(k-i)}{RT}} \right ) e^{-\frac{b(j - k')}{RT} } \bigg [ \ 
+  & e^{-\frac{c}{RT} }Z_{ND}(k, k') Q'(k, k')  \\
++\  & e^{-\frac{b + c}{RT}}Z_{5'D}(k + 1, k')Q'(k + 1, k') \\ 
++\ & e^{-\frac{b + c}{RT}}Z_{3'D}(k, k'-1)Q'(k, k' - 1) \\
++\  & e^{-\frac{2b + c}{RT}}Z_{DD}(k + 1, k'-1)Q'(k + 1, k'-1) \   \bigg ]
+\end{split}
+\end{equation}
+\noindent
+Now we'll take the $j$th element of the second sum and split it out (note that the $j$th part of the 1st sum has no elements to sum now, so we can decrement that too):
+\begin{equation}
+\begin{split}
+Q(i, j) = \sum_{k= i}^{j-1}\ \sum_{k' = k + 1}^{j-1} \left (  Q(i, k-1) + e^{-\frac{b(k-i)}{RT}} \right ) e^{-\frac{b(j - k')}{RT} } \bigg [ \ 
+  & e^{-\frac{c}{RT} }Z_{ND}(k, k') Q'(k, k')  \\
++ \  & e^{-\frac{b + c}{RT}}Z_{5'D}(k + 1, k')Q'(k + 1, k')\\ 
++\   & e^{-\frac{b + c}{RT}}Z_{3'D}(k, k'-1)Q'(k, k' - 1) \\
++\  & e^{-\frac{2b + c}{RT}}Z_{DD}(k + 1, k'-1)Q'(k + 1, k'-1) \   \bigg ] \\
++\ \sum_{k=i}^j  \left (  Q(i, k-1) + e^{-\frac{b(k-i)}{RT}} \right ) \bigg [ \ 
+  & e^{-\frac{c}{RT} }Z_{ND}(k, j) Q'(k, j) \\
++\  & e^{-\frac{b + c}{RT}}Z_{5'D}(k + 1, j)Q'(k + 1, j) \\ 
++\  & e^{-\frac{b + c}{RT}}Z_{3'D}(k, j-1)Q'(k, j - 1) \\
+ +\  & e^{-\frac{2b + c}{RT}}Z_{DD}(k + 1, j-1)Q'(k + 1, j-1) \   \bigg ]
+\end{split}
+\end{equation}
+\noindent
+Notice that the double sum is simply $Q(i,j-1)e^{-b/RT}$ and the terms of the second, single sum are over the pairs with $j$ or $j-1$. Therefore, we can use our heuristic for the pairs of $j$ and $j-1$ to produce the following computation for $Q(i, j)$ which is much more efficient than the previous ones:
+\begin{equation}
+\begin{split}
+Q(i,j) = Q(i, j-1)e^{-b/RT} +  \sum_{k(j)} & \bigg [  \left (  Q(i, k-1) + e^{-\frac{b(k-i)}{RT}} \right ) \
+   e^{-\frac{c}{RT} }Z_{ND}(k, j) Q'(k, j)  \\
++\ & \left (  Q(i, k-2) + e^{-\frac{b(k-i-1)}{RT}} \right )    e^{-\frac{b + c}{RT}}Z_{5'D}(k, j)Q'(k, j) \   \bigg ]  \\
++\  \sum_{l(j-1)} & \bigg [  \left (  Q(i, l-1) + e^{-\frac{b(l-i)}{RT}} \right ) \
+   e^{-\frac{c}{RT} }Z_{ND}(l, j-1) Q'(l, j-1)  \\
++\ & \left (  Q(i, l-2) + e^{-\frac{b(l-i-1)}{RT}} \right )   e^{-\frac{2b + c}{RT}}Z_{DD}(l, j-1)Q'(l, j-1) \   \bigg ] 
+\end{split}
+\end{equation}
+
+\section{Derivation of new Q'(i, j) formula}
+For $Q'(i, j)$ we start with the recursion:
+
+\begin{equation}
+\begin{split}
+Q'(i,j) = Z_H(i, j) &+ Z_S(i, j) Q'(i+1, j-1) + QBI(i, j) \\
++\ & e^{-\frac{a+c}{RT}}Z_{ND}(j, i) \sum_{k = i + 3}^{j-5}Q(i+1, k - 1)Q^1(k, j-1)  \\
++\ & e^{-\frac{a+b+c}{RT}}Z_{3'D}(j, i) \sum_{k = i + 4}^{j-5}Q(i+2, k - 1)Q^1(k, j-1)  \\
++\ & e^{-\frac{a+b+c}{RT}}Z_{5'D}(j, i) \sum_{k = i + 3}^{j-6}Q(i+1, k - 1)Q^1(k, j-2) \\
++\ & e^{-\frac{a+2b+c}{RT}}Z_{DD}(j, i) \sum_{k = i + 4}^{j-6}Q(i+2, k - 1)Q^1(k, j-2) 
+\end{split}
+\end{equation}
+\noindent
+The 4 for loops in this make this an expensive computation as the number of bases gets very high. However, these for loops are very similar to the partition function in structure. Indeed, we could perhaps replace each of them with a function of the form $Q^m(i, j)$ defined as
+
+\begin{equation}
+Q^m(i, j) = \sum_{k = i +3}^{j-5} Q(i + 1, k - 1) Q^1(k, j - 1)
+\end{equation} 
+\noindent
+Which would simplify the previous sum to a constant time computation, provided we have memoized $Q^m$:
+\begin{equation}
+\begin{split}
+Q'(i,j) = Z_H(i, j) &+ Z_S(i, j) Q'(i+1, j-1) + QBI(i, j)  \\
++\ & e^{-\frac{a+c}{RT}}Z_{ND}(j, i) Q^m(i, j)  \\
++\ & e^{-\frac{a+b+c}{RT}}Z_{3'D}(j, i) Q^m( i + 1, j) \\
++\ & e^{-\frac{a+b+c}{RT}}Z_{5'D}(j, i) Q^m(i, j- 1) \\
++\ & e^{-\frac{a+2b+c}{RT}}Z_{DD}(j, i) Q^m(i + 1, j -1)
+\end{split}
+\end{equation}
+
+\noindent
+Now there just needs to be a way to efficiently compute $Q^m$. First we substitute in the expanded version of $Q^1$:
+
+\begin{equation}
+\begin{split}
+Q^m(i, j) = \sum_{k = i + 3}^{j - 5}\  \sum_{k' = k + 1}^{j- 1} Q(i + 1, k - 1)  e^{-\frac{b(j - k')}{RT} } \bigg [ \ 
+  & e^{-\frac{c}{RT} }Z_{ND}(k, k') Q'(k, k') \\
++\  & e^{-\frac{b + c}{RT}}Z_{5'D}(k + 1, k')Q'(k + 1, k') \\ 
+ +\ & e^{-\frac{b + c}{RT}}Z_{3'D}(k, k'-1)Q'(k, k' - 1) \\
++\  & e^{-\frac{2b + c}{RT}}Z_{DD}(k + 1, k'-1)Q'(k + 1, k'-1) \   \bigg ]
+\end{split}
+\end{equation}
+
+\noindent
+Then we do as before and seperate out the $j$th term of the second sum. Note that there seems to be an additional sum needed to account that I've decreased the first sum's endpoint to $j-6$, but the sum ends up being from $k'= j-4$ to $k' = j -2$ and since $Q'$ for bases less than 4 apart is 0 due to hairpin loop rules, this sum is equal to zero.
+\begin{equation}
+\begin{split}
+Q^m(i, j) = \sum_{k = i + 3}^{j - 6}\  \sum_{k' = k + 1}^{j- 2} Q(i + 1, k - 1)  e^{-\frac{b(j - k'-1)}{RT} } \bigg [ \ 
+  & e^{-\frac{c}{RT} }Z_{ND}(k, k') Q'(k, k') \\
++ \  & e^{-\frac{b + c}{RT}}Z_{5'D}(k + 1, k')Q'(k + 1, k') \\ 
++ \  & e^{-\frac{b + c}{RT}}Z_{3'D}(k, k'-1)Q'(k, k' - 1) \\
+ + \  & e^{-\frac{2b + c}{RT}}Z_{DD}(k + 1, k'-1)Q'(k + 1, k'-1) \   \bigg ]\\
++ \ \sum_{k = i + 3}^{j - 5}\ Q(i + 1, k - 1)  \bigg [ \ 
+  & e^{-\frac{c}{RT} }Z_{ND}(k, j-1) Q'(k, j-1)  \\
++ \  & e^{-\frac{b + c}{RT}}Z_{5'D}(k + 1, j-1)Q'(k + 1, j-1) \\ 
+  + \ & e^{-\frac{b + c}{RT}}Z_{3'D}(k, j-2)Q'(k, j-2)\\
++ \  & e^{-\frac{2b + c}{RT}}Z_{DD}(k + 1, j-2)Q'(k + 1, j-2) \   \bigg ]\ 
+\end{split}
+\end{equation}
+\noindent
+The double sum is again going to be equal to $Q^m(i, j -1)e^{-b/RT}$, and the second sum can be made much more efficient by our heuristic. 
+\begin{equation}
+\begin{split}
+Q^m(i, j) = Q^m(i, j - 1)e^{-b/RT} + \sum_{k(j - 1)} \bigg [ & Q(i + 1, k - 1)   
+  e^{-\frac{c}{RT} }Z_{ND}(k, j-1) Q'(k, j-1)  \\
+ + \ &Q(i + 1, k - 2) e^{-\frac{b + c}{RT}}Z_{5'D}(k, j-1)Q'(k, j-1)  \bigg ]\ \\
++ \sum_{k(j-2)} \bigg [ & Q(i + 1, k - 1)   
+  e^{-\frac{c}{RT} }Z_{3'D}(k, j-2) Q'(k, j-2)  \\
+  +\ &Q(i + 1, k - 2) e^{-\frac{b + c}{RT}}Z_{DD}(k, j-2)Q'(k, j-2)  \bigg ]
+\end{split}
+\end{equation}
+\noindent
+
+Since the $k$s for any individual $j$ are found to be quite limited, the final form should be much more efficient at computing the $Q'(i, j)$.
+
+Note that for $Q$ and in many places for $Q'$, instead of a sum over
+the known $k$ that could possibly begin a leftmost pair, we see a
+double sum. One of them over $k$ that could end a leftmost pair, and
+this sum is limited to a certain length below $j$. This is just making
+the same assumption that the internal loop computation makes: there
+are not arbitrarily long strands without base pairs, after a certain
+number of bases it becomes overwhelmingly more likely to make a base
+pair that we can virtually ignore the energy of the the cases of
+length beyond a certain $L$.
+
+As for the seocnd sum, since the number of probable pairs for a base
+$i$ has been shown empirically to be roughly constant, regardless of
+length, the second sum is essentially constant. What this all means is
+that all $O(n^2)$ computations of $Q(i,j)$'s are roughly constant
+time. This means that the overall algorithm is $O(n^2)$, an
+improvement over the previous algorithms asymptotic bound by and order
+of $n$.
+
