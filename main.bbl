@@ -2,6 +2,16 @@
   \newcommand{\singleletter}[1]{#1} \newcommand{\switchargs}[2]{#2#1}
 \begin{thebibliography}{10}
 
+\bibitem{aalberts2013visualizing}
+Daniel~P Aalberts and William~K Jannen.
+\newblock Visualizing rna base-pairing probabilities with rnabow diagrams.
+\newblock {\em RNA}, 19(4):475--478, 2013.
+
+\bibitem{agius2010comparing}
+Phaedra Agius, Kristin~P Bennett, and Michael Zuker.
+\newblock Comparing rna secondary structures using a relaxed base-pair score.
+\newblock {\em RNA}, 16(5):865--878, 2010.
+
 \bibitem{ding2005rna}
 YE~Ding, Chi~Yu Chan, and Charles~E Lawrence.
 \newblock Rna secondary structure prediction by centroids in a boltzmann
@@ -20,10 +30,43 @@ Robert~M Dirks and Niles~A Pierce.
   including pseudoknots.
 \newblock {\em Journal of computational chemistry}, 24(13):1664--1677, 2003.
 
+\bibitem{flamm2002barrier}
+Christoph Flamm, Ivo~L Hofacker, Peter~F Stadler, and Michael~T Wolfinger.
+\newblock Barrier trees of degenerate landscapes.
+\newblock {\em Zeitschrift f{\"u}r Physikalische Chemie International journal
+  of research in physical chemistry and chemical physics}, 216(2/2002):155,
+  2002.
+
+\bibitem{hastings1970monte}
+W~Keith Hastings.
+\newblock Monte carlo sampling methods using markov chains and their
+  applications.
+\newblock {\em Biometrika}, 57(1):97--109, 1970.
+
 \bibitem{hofacker1998combinatorics}
 Ivo~L Hofacker, Peter Schuster, and Peter~F Stadler.
 \newblock Combinatorics of rna secondary structures.
 \newblock {\em Discrete Applied Mathematics}, 88(1):207--237, 1998.
+
+\bibitem{lyngso2000rna}
+Rune~B Lyngs{\o} and Christian~NS Pedersen.
+\newblock Rna pseudoknot prediction in energy-based models.
+\newblock {\em Journal of computational biology}, 7(3-4):409--427, 2000.
+
+\bibitem{PhysRevE.83.011113}
+Martin Mann and Konstantin Klemm.
+\newblock Efficient exploration of discrete energy landscapes.
+\newblock {\em Phys. Rev. E}, 83:011113, Jan 2011.
+
+\bibitem{mann2014memory}
+Martin Mann, Marcel Kuchar{\'\i}k, Christoph Flamm, and Michael~T Wolfinger.
+\newblock Memory efficient rna energy landscape exploration.
+\newblock {\em Bioinformatics}, page btu337, 2014.
+
+\bibitem{mathews2006revolutions}
+David~H Mathews.
+\newblock Revolutions in rna secondary structure prediction.
+\newblock {\em Journal of molecular biology}, 359(3):526--532, 2006.
 
 \bibitem{mathews1999expanded}
 David~H Mathews, Jeffrey Sabina, Michael Zuker, and Douglas~H Turner.
@@ -37,12 +80,25 @@ John~S McCaskill.
   probabilities for rna secondary structure.
 \newblock {\em Biopolymers}, 29(6-7):1105--1119, 1990.
 
+\bibitem{metropolis1953equation}
+Nicholas Metropolis, Arianna~W Rosenbluth, Marshall~N Rosenbluth, Augusta~H
+  Teller, and Edward Teller.
+\newblock Equation of state calculations by fast computing machines.
+\newblock {\em The journal of chemical physics}, 21(6):1087--1092, 1953.
+
 \bibitem{nussinov1980fast}
 Ruth Nussinov and Ann~B Jacobson.
 \newblock Fast algorithm for predicting the secondary structure of
   single-stranded rna.
 \newblock {\em Proceedings of the National Academy of Sciences},
   77(11):6309--6313, 1980.
+
+\bibitem{wolfinger2004efficient}
+Michael~T Wolfinger, W~Andreas Svrcek-Seiler, Christoph Flamm, Ivo~L Hofacker,
+  and Peter~F Stadler.
+\newblock Efficient computation of rna folding dynamics.
+\newblock {\em Journal of Physics A: Mathematical and General}, 37(17):4731,
+  2004.
 
 \bibitem{xia1998thermodynamic}
 Tianbing Xia, John SantaLucia, Mark~E Burkard, Ryszard Kierzek, Susan~J

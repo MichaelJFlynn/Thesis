@@ -6,4 +6,5 @@ dataOld = read.table("../data/testResultsPFOld.txt", head = TRUE, stringsAsFacto
 
 dataAll = rbind(dataNew, dataOld)
 
-partitionTimePlot = ggplot(data=dataAll, aes(x=n, y=time, color=type)) + geom_point()
+partitionTimePlot = ggplot(data=dataAll, aes(x=n, y=time, color=type)) + geom_point() +
+  theme_bw()

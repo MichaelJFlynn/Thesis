@@ -143,14 +143,14 @@ P(s) = \prod_{\text{cases}} \frac{P(\text{case})}{Q(\text{case})} =
 
 In the past 10 years, the stochastic traceback algorithm has become an
 increasingly central part of RNA secondary structure prediction
-algorithms (Ding et al 2005, [TODO: cite more]). This is because they
-present many advantages over the minimum free energy prediction. It
-can be shown that the minimum free energy state, even though it is the
-most probable state, can still have astronomically unlikely
-probabilities on average for typical strands of reasonable length
-([TODO: cite, figure]). The more important concept in understanding
-the physical behavior of an RNA strand is therefore the overall shape
-of the energy landscape. Althogh the probability of any individual
+algorithms \cite{mathews2006revolutions}. This is because they present
+many advantages over the minimum free energy prediction. It can be
+shown that the minimum free energy state, even though it is the most
+probable state, can still have astronomically unlikely probabilities
+on average for typical strands of reasonable length (Figure
+\ref{fig:probMFE}). The more important concept in understanding the
+physical behavior of an RNA strand is therefore the overall shape of
+the energy landscape. Althogh the probability of any individual
 structure might be infinitesimally small, there can be shown to be
 relatively few large basins containing clusters of similar foldings.
 The consensus structures and the difference between the consensus
@@ -169,7 +169,7 @@ The need to sample large numbers of secondary structures makes a
 speedup very convenient, and that is what motivates our current
 expedition.
 
-\section{Efficiency Improvements}
+\section{Adding Efficiency}
 
 Taking advantage of the empirical fact that the number of probable
 base pairs for an RNA strand tend to grow very slowly, we can restrict
@@ -194,18 +194,45 @@ P(\text{internal } (d, e) | i, j) &= \frac{e^{-E_i(i, d, e, j)/RT} Q^b(d,e)}{Q^b
 P(\text{goto } Q^m |i, j ) &= \frac{ e^{-a/RT} Q^m(i,j) } { Q^b(i,j)}. 
 \end{align}
 
-As one can see from the tables, the speedup is enormous. For randomly
-sampled sequences up to lengths in the thousands, the old stochastic
-timing grows quadratically, while the new method flatlines below it.
 
-[TODO: add speedup figure]
+\section{Results} 
 
+As one can see from Figure \ref{fig:stochOvN}, the speedup is
+enormous. For randomly sampled sequences up to lengths in the
+thousands, the old stochastic timing grows quadratically, while the
+new method flatlines below it. The log-log plot in Figure
+\ref{fig:stochLogLog} shows that the algorithm is not quite $O(n)$,
+this is probably because there is a probability to recurse down
+different cases of $Q^m$, however it is still quite below the old
+slope.
+\begin{figure}[t]
+\includegraphics[width=\textwidth]{stochOldvNew.eps}
+\caption{A comparison of the computation time between the partition
+  function computation, and stochastic tracebacks of 1000 samples with
+  the Old algorithm and the new algorithm. The new algorithm is much
+  faster.}
+\label{fig:stochOvN}
+\end{figure}
+\begin{figure}[t]
+\includegraphics[width=\textwidth]{stochloglog.eps}
+\caption{Log-Log plots of the timings in Figure
+  \ref{fig:stochOvN}. The new stochastic algorithm slope is slightly
+  higher than 1, but not much. }
+\label{fig:stochLogLog}
+\end{figure}
 A good question to ask would be, how do we know that this new
 algorithm is outputting structures with the correct
-probabilities. Verification plots here attempt to answer that
+probabilities. Verification plot Figure \ref{fig:stochV} attempts to answer that
 question.
-
-[TODO: add verification plot]
+\begin{figure}
+\includegraphics[width=\textwidth]{newzscores.png}
+\caption{A plot of the difference between the partition function
+  probability and the stochastic traceback probability of a base pair
+  according to the new algorithm. According to the number of states,
+  there should be 30 states above 0 probability that cross the
+  horizontal lines, there are less than 30.}
+\label{fig:stochV}
+\end{figure}
 
 What we would expect to see from these plots, is that for a given
 base, we would expect to see it pair with other bases with
@@ -217,15 +244,16 @@ the bounds, do not deviate much from what we would expect from doing
 $n^2$ experiments, so I think we can confidently say that the new
 algorithm is making the correct computation.
 
-[TODO: Add demonstration of full RAM sampling]
+%[TODO: Add demonstration of full RAM sampling]
 
 \section{Conclusion}
 
 The stochastic traceback algorithm can be sped up to allow large
 amounts of sampling such that the limiting computation factor is
 memory, not time. The applications of this improvement are that
-statistical algorithms like Ding \& Lawrence ([TODO: cite]) can
-minimize their statistical error. Nestor ([TODO: cite]) benefits
-greatly from these improvements because more structures mean more
-branches to the tree. In general the algorithm is useful because it
-removes unnecessary computation that was done before. 
+statistical algorithms like Ding \& Lawrence \cite{ding2004sfold}
+\cite{ding2005rna} can minimize their statistical error. Nestor
+\cite{aalbertsNestor} benefits greatly from these improvements because
+more structures mean more branches to the tree. In general the
+algorithm is useful because it removes unnecessary computation that
+was done before.

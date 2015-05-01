@@ -6,4 +6,72 @@
 %% prompt when you run the file main.tex through LaTeX.
 \chapter{Conclusion}
 
-Conclude conclude conclude
+My hopes for this thesis is that it will be of use to someone
+interested in doing RNA structure research in the future. Predicting
+RNA structure is a very interesting and difficult problem to solve,
+but it also contains a variety of open problems that someone new to
+the field can jump in and solve. I was very lucky to have been able to
+jump in and take some of the low hanging fruit. In addition, I think
+my research has opened up many more opportunities for future
+researchers to grab more low hanging fruit.
+
+One of these is combining Nestor and Barriers. Nestor is a great top
+down approach that focuses on the highest energy conflict between
+states to define the macrostates, and Barriers is a very good bottom
+up approach that defines physically accurate and conceptually complete
+thermodynamic variables. Combining the two approaches could be
+fruitful.
+
+Other improvements involve extending the efficiency improvements to
+their natural generalization, which includes the pseudoknot
+algorithm. This could be the most revolutionary change, because the
+improvements to the standard partition function are less significant
+since computers are fast enough to compute the largest strands in
+reasonable time anyways. This is not true for pseudoknotted partition
+functions, and an efficient algorithm could bring it into the realm of
+the feasible. This is what is discussed in the next section. 
+
+\section{Future work: Pseudoknot Algorithm}
+
+The partition function algorithm discussed in this thesis and the
+literature in general has a crucial flaw that makes it incomplete. The
+algorithm assumes that RNA secondary structure is `well nested', that
+there are no overlapping pairs $(i, j)$ and $(k, l)$ such that one of
+$k$ or $l$ is between $i$ and $j$ and the other is not.
+
+It is not true that RNA secondary structures are well-nested in
+general. When a non-nested pair is present in a secondary structure,
+that structure is said to contain a `pseudoknot'. Large groups of
+classified RNA sequences such as Group I Introns (around 6\%
+pseudeoknotted) and RNase P (around 13\% pseudoknotted) have
+pseudoknots in their chemically determined secondary structure, and it
+is in these groups that secondary structure prediction performs the
+worst (Matthews et all 1999). Large RNA molecules tend to have
+pseudoknots, which is unfortunate because the partition function
+computation scales much worse when pseudoknots are included.
+
+In general, computation of pseudoknotted structures is hard. In fact,
+the problem has been shown to be NP-Complete. Algorithms
+to perform the computation for a signficiant subset of pseudoknots
+have been designed, most notably by Dirks and Pierce, who have
+specified an $O(n^8)$ algorithm and a $O(n^5)$ simplification of that
+algorithm, using the same approximations used to reduce the complexity
+of the internal loop energy computation.
+
+I believe the heuristic approach of only iterating over allowed pairs
+will be able to significantly speed up the pseudoknot
+computation. This could be truly revolutionary, because there is no
+software that currrently includes pseudoknots in the computation of
+the partition function. Since the algorithms seem to perform the worst
+in high-pseudoknot structure groups, this could lead to a significant
+improvement in RNA structure prediction. 
+
+However, this would require a good energy model for pseudoknots to be
+developed. There currently is only one pseudoknot energy model, it is
+in the Dirks and Peirce paper \cite{dirks2003partition}. However this
+energy model is not physically based, and is just a linear energy
+model with a penalty for starting a pseudoknot and a constant bonus
+for adding pairs. As we have seen with the standard energy model, this
+approach does not capture enough interaction between terms, so a new
+energy model needs to be specified. This could be another low hanging
+fruit. 

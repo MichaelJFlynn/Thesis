@@ -11,121 +11,134 @@
 \section{RNA Secondary Structure Prediction}
 
 In the nucleus of a cell, RNA is constantly being synthesized by
-transcribing sections of DNA onto a portable chain of the nucleic
-acids adenine, gaunine, cytozine, and uracil. These RNAs serve several
-functions inside of the cell, including acting as:
+transcribing sections of DNA into mobile chains built from the nucleic
+acids adenine, gaunine, cytosine, and uracil. These RNAs serve several
+functions inside of the cell, including:
 
 \begin{description}
-\item[mRNA:] `messanger RNA', which travel to ribosomes to serve as blueprints for
+\item[mRNA:] `messenger RNA' which serve as blueprints for
   proteins,
-\item[tRNA:] `transfer RNA', which bond to and transport amino acids
+\item[tRNA:] `transfer RNA' which bond to and transport amino acids
   to the ribosome to be formed into proteins,
-\item[rRNA:] `ribosomal RNA', which make up ribosomes,
-\item[ncRNAs] `non-coding RNAs', which are not involved in the
+\item[rRNA:] `ribosomal RNA' which make up ribosomes,
+\item[microRNA] which bind to mRNA and modify translation or
+  degradation rates, 
+\item[ncRNAs] `non-coding RNAs'  which are not involved in the
   manufacturing of proteins, instead being used as tools of the cell
-  for tasks including the regulation of gene expression.
+  for tasks including the regulation of gene expression, or
+\item[others] such as snoRNAs which recognize splice cites.
 \end{description} 
 
 The last group, ncRNAs, comprises the majority of RNAs synthesized and
 have mostly unknown functions. It is unlikely that they just float
-around the cell uselessly, rather they are the tools the cell uses to
-build and run itself. It is also widely believed that the function of
-a strand of RNA is directly related to its structure. While DNA is
-composed of 2 seperate strands woven together in a double helix, RNA
-is most often found as a single strand that folds back onto
-itself. There are considered to be 3 main levels of structure of
-RNA. The first, the primary structure, is the sequence of nucleic
-acids that make up the strand of RNA i.e. `GACCUUGGGGCCCC...'. The
-second, the secondary structure, is how these bases fold back on each
-other and form base pairs, most often of the Watson and Crick variety
-(`G-C', `A-U', although sometimes 'G-U' is possible as well). The
-third, the tertiary structure, is how the structure bends on a larger
-scale as the stems and loops formed by the secondary structure
-interact with each other.
+around the cell uselessly, rather they are tools the cell uses to
+build and run itself. It is widely believed that the function of a
+strand of RNA is directly related to its structure. While DNA is
+composed of 2 separate strands base-paired to make a double helix, RNA
+is most often found as a single stranded backbone that makes base
+pairs with other parts of itself. There are considered to be 3 main
+levels of structure of RNA. The \emph{primary structure} is the
+sequence of nucleic acids that make up the strand of RNA
+i.e. `GACCUUGGGGCCCC...'. The \emph{secondary structure} is how these
+bases form base pairs (see Figure \ref{fig:loopFigure}), most often of
+the Watson and Crick variety (`G-C', `A-U', although sometimes 'G-U'
+is possible as well). The \emph{tertiary structure} is how the
+structure bends on a larger scale as the stems and loops formed by the
+secondary structure interact with each other.
 
 Primary structure can be readily observed by modern sequencing
 technology, however it is the secondary structure that determines the
 shape of the molecule, which is the most important when considering
 interactions with other biological molecules. The full specification
-of a secondary structure includes a list of every pair that is made by
-2 of the nucleic bases in the primary structure making a bond. Finding
-the secondary structure of an RNA molecule is a different task than
-finding the primary structure of RNA because there is no single
-solution for one chemical chain. For an individual RNA molecule there
-are many valid pairings, in fact for a sequence of length $n$ there
-are $O(1.8^n)$ secondary structures \cite{hofacker1998combinatorics}. 
+of a secondary structure state includes a list of every base
+pair. Finding the secondary structure of an RNA molecule is a
+different task than finding the primary structure of RNA because it
+samples many states in thermal equilibrium. For an individual RNA
+molecule there are many valid pairings, in fact for a sequence of
+length $n$ nucleotides there are $O(1.8^n)$ secondary structures
+\cite{hofacker1998combinatorics}.
 
-To find which of these structures the molecule is likely to assume in
-nature, we turn to statistical mechanics. We approximate the RNA
-molecule as an isolated system in contact with a thermal resevoir that
-is the cell, with each secondary structure as a state of that
-system. In such a system the probability of any state $s$ is its
-boltzmann factor divided by the partition function:
+[Todo: RNA is outer-planar graph, no pseudoknots]
 
+To describe the structural ensemble, we turn to statistical
+mechanics. We approximate the RNA molecule as an isolated system in
+contact with a thermal resevoir that is the cell, with each secondary
+structure as a state of that system. In such a system the probability
+of any state $s$ is its Boltzmann factor divided by the partition
+function:
 \begin{equation}
 P(s) = \frac{1}{Z} e^{-\beta E(s)},
 \end{equation}
-
 where $\beta = \frac{1}{RT}$, $R$ is the gas constant, $T$ is the
 temperature, and
-
 \begin{equation}
 Z = \sum_{s} e^{-\beta E(s)}.
 \end{equation}
 
 Initially researchers were satisfied with presenting the MFE (minimum
 free energy) state as the state the molecule assumes in nature, after
-all this state is the most probable. However it has become clear that
-this analysis is unsufficient, as MFE structures still are not very
-probable. Statistical procedures, sampling the Boltzmann distribution,
-are a more modern tool for predicting the secondary structure found in
-nature. 
+all this state is the most probable. However we will see that, perhaps
+counterintuitively, the MFE structure is not very probable (see Figure
+\ref{fig:probMFE}). Lokking at the whole or sample portion of
+theBoltzmann distribution, are more modern approaches for predicting
+the secondary structure ensemble found in nature.
 
 \section{The Energy Model of RNA}
 
 Computing the partition function and probabilities is impossible
 without an energy model for RNA, $E(s)$. Setting the energy of the
 single-stranded (no pair) state as $E = 0$, the energy model must
-accurately estimate an energy for a folded secondary structure. In
-chemical experiments, this can be measured by using a strand with an
-known secondary structure and finding it's $\Delta G$ by deducing it
-from the relative concentrations of single-stranded states to
-double-stranded states in solution (see UV melting section).
+accurately estimate an energy for a folded secondary structure. The
+model parameters we will use come from measuring $\Delta G$ of pairing
+complementary sequences by measuring the relative concentrations of
+single-stranded states to double-stranded states in solution (see UV
+melting section).
 
 %% historical notes and such
- The first energy models developed by researchers awarded energy
- bonuses to pairs formed. One of the first papers by Nussinov and
- Jacobson \cite{nussinov1980fast} awarded the same amount of points to
- A-U and G-C pairs and found the MFE state, so the algorithm reduced
- to finding the legal folding with the most base pairs. After, it was
- discovered exprimentally that G-C pairs are more stable than A-U
- pairs. Because of this, in further iterations the energy would be
- determined by counting hydrogen bonds of cannonically paired bases,
- assigning each -1 kcal/mol of free energy. This would mean that GC
- pairs are given -3 kcals/mol, AU and GU pairs are both given -2. The
- algorithm developed for this model minimized the free energy. Both
- this algorithm and the previous one had elementary dynamic
- programming solutions. They were useful models to use as a baseline,
- however, even the second iteration was not very accurate, on average
- only 20.5\% of known base pairs are correctly predicted. Later energy
- models would use it as a control for the hypothesis that they
- increased secondary structure prediction accuracy
- \cite{mathews1999expanded}.
+In early secondary structure prediction algorithms
+\cite{nussinov1980fast}, energy bonuses were assigned for any pair.
+The Nussinov \& Jacobson algorithm reduced to finding the legal
+folding with the most base pairs. After, it was discovered
+exprimentally that G-C pairs are more stable than A-U pairs. Because
+of this, in further iterations the energy would be determined by
+counting hydrogen bonds of cannonically paired bases, assigning each
+-1 kcal/mol of free energy. This would mean that GC pairs are given -3
+kcals/mol, AU and GU pairs are both given -2. Additionally, certain
+loops were given energy penalties for forming. The Zuker and Steigler
+algorithm, developed for this model, minimized the free energy
+\cite{zuker1981optimal}. Both this algorithm and the previous one had
+elementary dynamic programming solutions. They were useful models to
+use as a baseline, however, even the second iteration was not very
+accurate, on average only 20.5\% of known base pairs are correctly
+predicted. Later energy models would use it as a control for the
+hypothesis that they increased secondary structure prediction accuracy
+\cite{mathews1999expanded}.
 
 Indeed, much improvement was made over the hydrogen bond model by
-expanding it to include what is now called the Nearest Neighbor
+expanding it to include what is now called the Nearest-Neighbor
 model. Experiments made it clear that energy of an RNA folding is not
 just linearly dependent on the bonds that are made. There are
-significant interaction effects between nearby bases and bonds, this
-is called `sequence dependence', and there are polymer physics based
-energy terms that scale logarithmically with the length of a loop
-(this can be thought of as the energy it takes to bend the strand). To
-handle these interaction effects in a model, we approximate that they
-are contained within loop regions. We divide our structure into its
-loops and compute the energy of each loop, with a seperate energy
-model for each.
+significant interaction effects between neighboring bases and bonds,
+this is called `sequence dependence', and there are polymer physics
+based free energy terms that scale logarithmically with the length of
+a loop (this comes from the entropy loss to make a loop). Zuker
+realized the we can represent secondary structure in terms of base
+pairs or in terms of loops (including base pair stacks) which are in
+the Nearest-Neighbor model. We divide our structure into its loops and
+compute the energy of each loop, with a separate energy model for
+each.
+
+
 
 \begin{figure}[t]
+\includegraphics[width=\textwidth]{big_loop.eps}
+\caption{This is one possible folding out of the $O(1.8^n)$ secondary
+    structures of the sequence
+    `AGGAGAAGCAGGAAACCUCAAAGAACCAACUCCA'. }
+\label{fig:ssExample}
+\end{figure}
+\begin{figure}[t]
+
 \includegraphics[width=\textwidth]{full_loop_figure.eps}
 \caption{The 4 types of loops, black connections are bonds in the RNA
   backbone, grey connections are hydrogen bonds between bases. The
@@ -133,7 +146,11 @@ model for each.
   \textit{Hairpin Loops}, one bonding pair closing off a turn in the
   RNA backbone, \textit{Internal Loops}, which can range from bulges
   to long loops, connecting to pairs with 2 chains of unpaired bases,
-  and \textit{Multi-Loops}, which  connect 3 or more pairs.}
+  and \textit{Multi-Loops}, which connect 3 or more pairs. The diagram
+  displays the loops with how they will appear in the folded structure
+  pictured above, and below is how the same loops will be layed out
+  many diagrams of RNA structure, such as RNAbows
+  \cite{aalberts2013visualizing}.}
 \label{fig:loopFigure}
 \end{figure}
 
@@ -141,34 +158,28 @@ In Figure \ref{fig:loopFigure}, these loops are described. In brief,
 there is a different category and energy model for each type of loop
 with different numbers of paired and unpaired bases. For example a
 stack loop has 2 pairs and no unpaired bases. An internal loop has 2
-pairs and arbitrary unpaired bases. A hairpin has 1 pair and arbitrary
-unpaired bases. Finally a multi-loop has at least 3 pairs and
-arbitrary unpaired bases. 
+pairs and intervening unpaired bases. A hairpin has 1 pair and any
+amount of unpaired bases. Finally a multi-loop has at least 3 pairs
+and unpaired bases between them.
 
-There is a 5th type of loop, called a pseudoknot. A pseudoknot
-consists of 2 ``crossing'' pairs. This breaks the standard topology of
-the loop diagrams and makes computation of the partition function
-provably NP-hard [TODO: cite]. For this reason, pseudoknots are
-excluded from consideration. This is not ideal because pseudoknots do
-appear in nature, notably in ribosomal RNA (Mathews et al
-1999). However, some of the results of this reseach might make the
-computation of a certain restricted set of pseduoknots much more
-efficient. 
+There is a 5th type of loop, called a pseudoknot. RNA secondary
+structure is normally assumed to be an outer-planar graph. A
+pseudoknot consists of 2 ``crossing'' pairs. This breaks the standard
+topology of the loop diagrams and makes computation of the partition
+function provably NP-hard. For this reason, pseudoknots
+are excluded from consideration. This is not ideal because pseudoknots
+do appear in nature, notably in ribosomal RNA and at a rate of up to
+12\% in Group I and Group II Introns
+\cite{mathews1999expanded}. However, some of the results of this
+reseach might make the computation of a certain restricted set of
+pseduoknots much more efficient.
 
-[TODO: pseudoknot figure]
+%[TODO: pseudoknot figure]
 
 \subsection{Loop Parameters} 
 
-One might wonder what the parameters, the terms, of this model would
-be. The model is simply that the energy of a structure, is the sum of it's loops:
-
-\begin{equation}
-E(s) = \sum_{l \in \text{loops}} E(l).
-\end{equation}
-
-For example for a very predictably folding strand 'GGGAAACCC' (G's
-really want to pair with C's and A's resist pairing), we can decompose
-the energy as such:
+The strand 'GGGAAACCC', will predictably form a stem-loop
+structure. We can decompose the energy as such:
 
 \begin{equation}
 \Delta G \left ( \vcenter{\hbox{ \includegraphics[scale=0.25]{stem_loop.eps}}}
@@ -182,47 +193,41 @@ the energy as such:
 \label{eq:decomposition}
 \end{equation}
 
-Where $\Delta G_S$ is the function for energy of a stack loop and
+Where $\Delta G_S$ is the function for free energy of a stack loop and
 $\Delta G_H$ is the function that gives you the energy of a hairpin
 loop.
 
-A model of loop energy should capture as much non-linearity as
-possible. For stack loops, the legal pairings limit the possible loops
-types. In fact, instead of worrying about how to model the loop's
-energy using polymer physics, we can just exhaust the possible stack
-loops, giving each a seperate parameter, i.e.
-
+For stack loops, the legal pairings restrict the possible loop
+types. The free energy of all possible stack loops were measured, each
+with a seperate parameter, i.e.
 \begin{equation}
 \Delta G_S \left ( \vcenter{\hbox{\includegraphics[scale=0.25]{GGCC-loop.eps}}}
-\right ) = \beta_{S1}, \  
+\right ), \  
 \Delta G_S \left ( \vcenter{\hbox{\includegraphics[scale=0.25]{GACU-loop.eps}}}
-\right ) = \beta_{S2}, \ 
+\right ), \ 
 \Delta G_S \left ( \vcenter{\hbox{\includegraphics[scale=0.25]{AAUU-loop.eps}}}
-\right ) = \beta_{S3}, \ \dots
+\right ), \ \dots
 \end{equation}
+where each are parameters (the $\beta$s) to a linear regression model
+we fit to $\Delta G$ of `GGGAAACCC' and similar sequences (see
+section: UV Melting Experiments). This is what is done in practice.
 
-Where $\beta_{S1},\  \beta_{S2},\  \dots,\  \beta_{Sn}$ are parameters to a linear
-regression model we fit to $\Delta G$ of `GGGAAACCC' and similar
-sequences (see section: UV Melting Experiments). This is what is done in practice.
-
-For the other type of loops, the sizes can grow unbounded, so simply
-having a term for each loop will not work. However, at least for
-internal and hairpin loops, in keeping with the nearest-neighbor
-philosophy, we can keep a term for every combination of the bases that
-start the loop, and then have a general term for computing the length,
-addressing these both directly we have:
+Small internal loops and hairpins were parameterized individually but
+transition to general forms for large loops to keep the model
+finite. They are as follows:
 
 \paragraph{Hairpin Loop} 
 Loops with 3 and 4 unpaired bases are kept in special tables of
 triloop and tetraloop parameters, respectively. Each possible
-tetraloop and triloop has it's own energy determined by
+tetraloop and triloop has its own energy determined by
 experiment. Beyond that, the general model is 
-\begin{align}
-\Delta G_H(n > 3) = & \Delta G_{init}(n) + \Delta
+\begin{equation}
+\begin{split}
+\Delta G_H(n > 3) =  \  \Delta G_{init}(n) &+ \Delta
 G_{HStack} (\text{Initializing Stack}) \\
 &+ \Delta G (\text{bonuses}).
-\end{align}
-
+\end{split}
+\end{equation}
 As you can see there is an initialization term and a stack term that
 are both fitted via linear regression. The bonus term is for various
 special loops that have been experimentally found to be more
@@ -236,13 +241,13 @@ for $1 \times 1$, $1 \times 2$, $2 \times 2$, internal loops, where $n
 the other having $m$. This results from extensive studies on the
 $\Delta G$'s of these internal loops. For the rest of internal loops
 there's a model of the form:
-
-\begin{align}
- \Delta G_{int} ( n \times m ) = \Delta G_{init} (n + m) + \Delta G_{asymmetry} (| n - m |) \\
-& + \Delta G ( \text{bonuses}).
-\end{align}
-
-Where each term on the right is a regression parameter and the bonus
+\begin{equation}
+\begin{split}
+ \Delta G_{int} ( n \times m ) = \Delta G_{init} (n + m) &+ \Delta G_{asymmetry} (| n - m |) \\
+& + \Delta G ( \text{bonuses}),
+\end{split}
+\end{equation}
+where each term on the right is a regression parameter and the bonus
 term is similar to the hairpin bonus term for loops composed and ended
 with certain special kinds of bases determined experimentally to be
 more stable.
@@ -250,19 +255,19 @@ more stable.
 \paragraph{Multi-Loops}
 Multi-Loops are harder to create experimental strands for and because
 of this there are no individual parameters for multi loops. In fact,
-for modeling mutli-loops we regress to a more simple linear model of the form:
+for modeling mutli-loops we regress to a more simple linear model of
+the form:
 \begin{equation}
-\Delta G_{multi} = a_1 + b_1 n + c_1 h + \Delta G_{dangle}
+\Delta G_{multi} = a_1 + b_1 n + c_1 h + \Delta G_{dangle},
 \end{equation}
-
-Where $a_1$ is a penalty for starting a mutl-loop, $n$ is the number
+where $a_1$ is a penalty for starting a mutl-loop, $n$ is the number
 of unpaired bases in the loop, $b_1$ is an energy penalty per unpaired
 base, $h$ is the number of pairs in the structure, $c_1$ is the energy
 bonus per pair, and $\Delta G_{dangle}$ is a term similar to stack
 loop terms which include the energy of the unit composed of a pair and
 its 2 adjacent unpaired bases, if it has them.
 
-[TODO: coaxial stacking?]
+%[TODO: coaxial stacking?]
 
 \subsection{UV Melting experiments}
 
@@ -278,36 +283,34 @@ its 2 adjacent unpaired bases, if it has them.
   more energy from the environment allowing it to escape the
   double-stranded state and so there is a transition interval where as
   the temperature increases the UV extinction goes from the
-  double-stranded extinction to the single stranded extinction.[TODO:
-    this graph has double stranded and single stranded extinction
-    switched]}
+  double-stranded extinction to the single stranded extinction.}
 \label{fig:UVMeltGraph}
 \end{figure}
 
-Loop regions are given energies as parameters to linear regression
-models of free energy change in predictably folding strands. For
-example, the strand `GGGAAACCC' folds predictably into a structure
-with all the G's paired to the C's and a 3-A hairpin turn (because G's
-pair very strongly to C's and A's tend to resist pairing) as seen in
-Equation \ref{eq:decomposition}. Large amounts of identical strands
-are synthesized and put into solution and heated. A two-state
-assumption is made, either the RNA is folded in a `double-stranded'
-state or unfolded in a `single-stranded' state. As the solution heats,
-there is enough ambient energy to put all the strands in the unfolded,
-no-bonds state. RNA is an organic, aromatic molecule that absobes
-light in the UV spectrum in different amounts depending on whether it
-is in a folded state or unfolded state, so the UV absobtion is fit to
-a curve that then tells us about the relative concentrations of the
-single-stranded vs. double-stranded state, which in turn tells us
-about the free energy change between the two at a given
-temperature. This free energy change is extracted and treated as a
-function of the loop variables, which are then fitted to a linear
+At previously stated, loop regions are given energies as parameters to
+linear regression models of free energy change in predictably folding
+strands. For example, the strand `GGGAAACCC' folds predictably into a
+structure with all the G's paired to the C's and a 3-A hairpin turn
+(because G's pair very strongly to C's and neither are complementary
+to A) as seen in Equation \ref{eq:decomposition}. David Turner
+executed the following experimental process in the 90s: large amounts
+of identical strands are synthesized and put into solution and
+heated. A two-state assumption is made, either the RNA is folded in a
+`double-stranded' state or unfolded in a `single-stranded' state. As
+the solution heats, there is enough ambient energy to put all the
+strands in the unfolded, no-bonds state. RNA is an organic, aromatic
+molecule that absobes light in the UV spectrum in different amounts
+depending on whether it is in a folded state or unfolded state, so the
+UV absobtion is fit to a curve that then tells us about the relative
+concentrations of the single-stranded vs. double-stranded state, which
+in turn tells us about the free energy change between the two at a
+given temperature. This free energy change is extracted and treated as
+a function of the loop variables, which are then fitted to a linear
 model over experiments on many different such strands
 \cite{xia1998thermodynamic}.
 
 For example, if we wanted to compute the free energy change of a
-strand and fit it to it's loop parameters:
-
+strand and fit it to its loop parameters:
 \begin{equation}
 \Delta G \left ( \vcenter{\hbox{ \includegraphics[scale=0.25]{stem_loop.eps}}}
  \right ) =
@@ -318,35 +321,30 @@ strand and fit it to it's loop parameters:
 \Delta G_H \left (\vcenter{\hbox{\includegraphics[scale=0.25]{GACA-hairpin.eps}}}
 \right ) 
 \end{equation}
-
 We synthesize large amounts of the strand 'GGGAAACCC', put them in
 solution and heat them and record their UV extinction. Observing the
 curve to be like something in Figure \ref{fig:UVMeltGraph}. The
 melting temperature $T_m$ is defined to be where the concentrations of
 single stranded and double stranded molecules are equal, and this is
 taken to be the inflection point of the graph in Figure
-\ref{fig:UVMeltGraph}. From there Van't Hoof analysis is performed,
+\ref{fig:UVMeltGraph}. From there Van't Hoff analysis is performed,
 where the concentration, $C_T$, is varied and this follows a model of
 the form:
-
 \begin{equation}
   \frac{1}{T_m} = \frac{R}{\Delta H} \log{C_T} + \frac{\Delta S}{\Delta H}.
 \end{equation}
-
 This equation comes from the relation $\Delta G = -RT \log{K_{eq}}$
 and plotting $1/T_m$ against $\log{C_T}$ and fitting a linear model
 gives us the parameters $\Delta S$ and $\Delta H$ from the slope and
 intercept and therefore $\Delta G$ through the relation
-
 \begin{equation}
 \Delta G = \Delta H - T \Delta S.
 \end{equation}
-
-If we repeat this process over several strands, we can then fit the
-$\Delta G$'s to a linear model based on the many parameters described
-in the Loop Parameters section. From there, when we want to compute
-the energy of a folding, all we have to do is seperate it into loops
-and sum the energies of each based off the parameters of this model.
+Repeating this process over several strands, Turner fit the $\Delta
+G$'s to a linear model based on the many parameters described in the
+Loop Parameters section. From there, when we want to compute the
+energy of a folding, all we have to do is seperate it into loops and
+sum the energies of each based off the parameters of Turner's model.
 
 
 %Without the use of cool graphics, we might notate the above as:
@@ -365,13 +363,10 @@ and sum the energies of each based off the parameters of this model.
 
 \begin{figure}[t]
   \includegraphics[width=\textwidth]{big_loop.eps}
-
   \captionsetup{singlelinecheck=off}
-  \caption[.]{
-    This is one possible folding out of the $O(1.8^n)$ secondary
-    structures of the sequence
-    `AGGAGAAGCAGGAAACCUCAAAGAACCAACUCCA'.    
-  }
+  \caption[.]{ This is one possible folding of the sequence
+    `AGGAGAAGCAGGAAACCUCAAAGAACCAACUCCA'. The same picture as Figure
+    \ref{fig:ssExample}.  }
   \label{fig:bigLoop}
 \end{figure}
 
@@ -397,32 +392,28 @@ in a special parameter table designed specifically for hairpins with 3
 unpaired bases called triloops:
 \begin{align}
   \Delta G \left ( \vcenter{\hbox{\includegraphics[scale=0.25]{GACA-hairpin.eps}}}
-  \right ) &= 5.8
+  \right ) &= 5.8 \text{ kcal/mol}.
 \end{align}
-
 For the internal loop, there is a direct lookup for the $2 \times 2$
 mismatch in a table:
-
 \begin{align}
   \Delta G \left ( \vcenter{\hbox{\includegraphics[scale=0.25]{GAAG-CAAC-internal-loop.eps}}}
-  \right ) = 0.5 \text{ kcals/mol}.
+  \right ) = 0.5 \text{ kcal/mol}.
 \end{align}
-
 The multibranch loop has 3 pairs and 2 unpaired bases. The energy is therefore:
-
 \begin{align}
   \Delta G \left (\vcenter{\hbox{\includegraphics[scale=0.25]{CAGCUAAC-multiloop.eps}}}
-  \right ) = 3.4 + 0*3 + 0.4*2 = 4.2 \text{ kcals/mol}.
+  \right ) = 3.4 + 0*3 + 0.4*2 = 4.2 \text{ kcal/mol}.
 \end{align}
-
 If we sum up the contributions, we get that $\Delta G = -6.36 \text{
-  kcals/mol}$. The energy of the MFE state can be computed using
+  kcal/mol}$. The energy of the MFE state can be computed using
 software, and I find it to be $-3.06$ with just the first stem and a
 large hairpin. [TODO: figure out what is wrong, make ct file, find energy].
 
 \section{Critique of the Energy Model}
 
-The energy model of RNA is not perfect, notably so. It is complex,
+The free energy model of RNA is not perfect. It ignores how tertiary
+structure could influence the structure's stability. It is complex,
 there are linear models, non-linear models, lookup tables, and
 bonuses. Complexity is a very undesirable quality for a model, it
 makes it hard to implement and hard for new researchers to get started
@@ -434,44 +425,51 @@ it is not clear what advantage these extra parameters give, perhaps
 they could be reduced to one, to simplify the model greatly. Another
 problem is that the data of the original experiments has been lost, so
 no one can take a closer look at how well the parameters fit, and no
-one seems to be interested in running the experiments again. The only
-thing that seems to keep the current parameters in good standing is
-relatively solid results in prediction, with something like 80\% of
-base pairs correctly predicted. However, to make any progress from
-this point, it is essential to get the energy model correct. 
+one seems to be interested in running the experiments
+again. Additionally, the terms are heavily dependent on the salt
+concentration of the solution, and great care has to be made to
+imitate the conditions of the cell. It is hard to know whether the
+solutions from the UV melting experiment were prepared correctly.
+
+The only thing that seems to keep the current parameters in good
+standing is relatively solid results in prediction, with something
+like 80\% of base pairs correctly predicted. However, to make any
+progress from this point, it is essential to get the energy model
+correct.
 
 If there was a list of big problems to tackle in RNA secondary
 structure prediction, fixing the energy model should be a top
 priority. The new model should be consistent and physically based and
 confirmed by experiments. Some groups have made progress on creating
 energy models for multi-loops that may perform better than the current
-parameters [TODO: insert aalberts plug]. However, none of these
-changes have been implemented in the software packages that currently
-hold the grand majority of the secondary structure prediction
-market. There are reasons for this, including the fact that the
-software is massive, complicated, and poorly documented. Perhaps a new
-energy model could usher in a better software framework for RNA
-prediction that has:
+parameters.
+%TODO: aalberts plug
+However, none of these changes have been implemented in
+the software packages that currently hold the grand majority of the
+secondary structure prediction market. There are reasons for this,
+including the fact that the software is massive, complicated, and
+poorly documented. Perhaps a new energy model could usher in a better
+software framework for RNA prediction that has:
 
 \begin{enumerate}
 \item Better naming conventions, with function, variable, and source
   file names describing precisely what they represent,
 \item Consistently documented source files, perhaps with a full manual
-  created with doxygen,  
+  created with Doxygen,  
 \item Simpler energy models, with less branching and complexity.
 \end{enumerate}
 
-This is not to belittle the efforts of those that implemented Unafold
+This is not to belittle the efforts of those that implemented UNAfold
 and RNAStructure, after all they accomplished the great feat of
-implementing these complex software suites. Instead, it is to note
+implementing these complex rules in their software. Instead, it is to note
 that the job is not done, and the items listed above are things that
 need to be accomplished.
 
-\section{Applications of RNA Structure Prediction}
+%\section{Applications of RNA Structure Prediction}
 
-RNA Secondary structure has many clinical applications including in
-sequence design.
+%RNA Secondary structure has many clinical applications including in
+%sequence design.
 
-[TODO: finish this section]
+%[TODO: finish this section]
 
 

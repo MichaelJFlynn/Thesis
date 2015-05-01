@@ -444,7 +444,7 @@ These experiments comprise of [MUTATE PROCESS] and SHAPE analysis.
 
 *** Notes
 **** Getting the Data: Rdat files from rmdb.stanford.edu (mutate and map data)
-
+     
 **** Normalize the reactivity data to probabilities
 
 **** Fit clusters using gradient decent 
@@ -552,7 +552,7 @@ What is the experiment?  - take a strand, make it's mutants, get the
 * Improvements to Partition function
 ** hopefully got down to O(n^2)
 ** Notes
-Need to:
+   Need to:
 
 - standardize notation - write an introduction summarizing the goal of
   computing the parition function [check] - note the assumptions about

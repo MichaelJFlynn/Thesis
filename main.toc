@@ -1,35 +1,44 @@
-\contentsline {chapter}{\numberline {1}Introduction}{11}
-\contentsline {section}{\numberline {1.1}RNA Secondary Structure Prediction}{11}
-\contentsline {section}{\numberline {1.2}The Energy Model of RNA}{13}
-\contentsline {subsection}{\numberline {1.2.1}Loop Parameters}{15}
-\contentsline {paragraph}{Hairpin Loop}{16}
-\contentsline {paragraph}{Internal Loop}{17}
-\contentsline {paragraph}{Multi-Loops}{17}
-\contentsline {subsection}{\numberline {1.2.2}UV Melting experiments}{18}
-\contentsline {subsection}{\numberline {1.2.3}Example Energy Computation}{20}
-\contentsline {section}{\numberline {1.3}Critique of the Energy Model}{22}
-\contentsline {section}{\numberline {1.4}Applications of RNA Structure Prediction}{23}
-\contentsline {chapter}{\numberline {2}Partition Function Computation and Improvements}{25}
-\contentsline {section}{\numberline {2.1}Introduction}{25}
-\contentsline {section}{\numberline {2.2}Motivation}{28}
-\contentsline {section}{\numberline {2.3}The Computation}{30}
-\contentsline {section}{\numberline {2.4}Efficient Partition Function}{33}
-\contentsline {section}{\numberline {2.5}Results}{36}
-\contentsline {section}{\numberline {2.6}Conclusion}{36}
-\contentsline {chapter}{\numberline {3}Stochastic Traceback Algorithm and Improvements}{39}
-\contentsline {section}{\numberline {3.1}Introduction}{39}
-\contentsline {section}{\numberline {3.2}Motivation}{43}
-\contentsline {section}{\numberline {3.3}Efficiency Improvements}{44}
-\contentsline {section}{\numberline {3.4}Conclusion}{46}
-\contentsline {chapter}{\numberline {4}Nestor and Clustering}{47}
-\contentsline {section}{\numberline {4.1}Motivation}{47}
-\contentsline {section}{\numberline {4.2}Nestor}{48}
-\contentsline {chapter}{\numberline {5}Reactivity Experiments}{49}
-\contentsline {section}{\numberline {5.1}Methods}{49}
-\contentsline {chapter}{\numberline {6}Pseudoknot Algorithm}{51}
-\contentsline {section}{\numberline {6.1}Introduction}{51}
-\contentsline {section}{\numberline {6.2}Derivation}{52}
-\contentsline {chapter}{\numberline {7}Conclusion}{55}
-\contentsline {chapter}{\numberline {A}UNAfold Implementation of Partition Function Improvements}{57}
-\contentsline {section}{\numberline {A.1}New Q(i,j) derivation}{57}
-\contentsline {section}{\numberline {A.2}Derivation of new Q'(i, j) formula}{60}
+\contentsline {chapter}{\numberline {1}Introduction}{13}
+\contentsline {section}{\numberline {1.1}RNA Secondary Structure Prediction}{13}
+\contentsline {section}{\numberline {1.2}The Energy Model of RNA}{15}
+\contentsline {subsection}{\numberline {1.2.1}Loop Parameters}{17}
+\contentsline {paragraph}{Hairpin Loop}{18}
+\contentsline {paragraph}{Internal Loop}{19}
+\contentsline {paragraph}{Multi-Loops}{19}
+\contentsline {subsection}{\numberline {1.2.2}UV Melting experiments}{20}
+\contentsline {subsection}{\numberline {1.2.3}Example Energy Computation}{22}
+\contentsline {section}{\numberline {1.3}Critique of the Energy Model}{24}
+\contentsline {chapter}{\numberline {2}Partition Function Computation and Improvements}{27}
+\contentsline {section}{\numberline {2.1}Introduction}{27}
+\contentsline {section}{\numberline {2.2}Motivation}{30}
+\contentsline {section}{\numberline {2.3}The Computation}{32}
+\contentsline {section}{\numberline {2.4}Efficient Partition Function}{35}
+\contentsline {section}{\numberline {2.5}Results}{38}
+\contentsline {section}{\numberline {2.6}Conclusion}{38}
+\contentsline {chapter}{\numberline {3}Stochastic Traceback Algorithm and Improvements}{41}
+\contentsline {section}{\numberline {3.1}Introduction}{41}
+\contentsline {section}{\numberline {3.2}Motivation}{45}
+\contentsline {section}{\numberline {3.3}Adding Efficiency}{46}
+\contentsline {section}{\numberline {3.4}Results}{47}
+\contentsline {section}{\numberline {3.5}Conclusion}{48}
+\contentsline {chapter}{\numberline {4}Macrostates}{53}
+\contentsline {section}{\numberline {4.1}Sfold}{55}
+\contentsline {subsection}{\numberline {4.1.1}Sfold Methods}{56}
+\contentsline {subsection}{\numberline {4.1.2}Drawbacks}{57}
+\contentsline {section}{\numberline {4.2}Vienna RNA: Barriers}{58}
+\contentsline {subsection}{\numberline {4.2.1}Algorithm}{58}
+\contentsline {subsection}{\numberline {4.2.2}Coarse Graining}{61}
+\contentsline {section}{\numberline {4.3}Nestor and RNAbows}{62}
+\contentsline {subsection}{\numberline {4.3.1}Algorithm}{62}
+\contentsline {subsection}{\numberline {4.3.2}Visualization}{63}
+\contentsline {section}{\numberline {4.4}PF method}{63}
+\contentsline {section}{\numberline {4.5}Testing Nestor PF predictions using SHAPE experiments}{66}
+\contentsline {subsection}{\numberline {4.5.1}Mutate and Map experiments}{67}
+\contentsline {subsection}{\numberline {4.5.2}Normalization Strategy}{68}
+\contentsline {subsection}{\numberline {4.5.3}Cluster Data Analysis}{68}
+\contentsline {subsection}{\numberline {4.5.4}Results}{69}
+\contentsline {chapter}{\numberline {5}Conclusion}{73}
+\contentsline {section}{\numberline {5.1}Future work: Pseudoknot Algorithm}{74}
+\contentsline {chapter}{\numberline {A}UNAfold Implementation of Partition Function Improvements}{77}
+\contentsline {section}{\numberline {A.1}New Q(i,j) derivation}{77}
+\contentsline {section}{\numberline {A.2}Derivation of new Q'(i, j) formula}{80}

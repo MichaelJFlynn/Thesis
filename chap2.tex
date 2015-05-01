@@ -4,7 +4,7 @@
 %% You can process specific files by typing their names in at the 
 %% \files=
 %% prompt when you run the file main.tex through LaTeX.
-\chapter{Partition Function Computation and Improvements}
+\chapter{Partition Function Computation and Improvements} \label{pfChapter}
 \section{Introduction}
 
 The partition function for a thermodynamic system of fixed volume, in
@@ -33,7 +33,7 @@ partition function. For example, say we have computed the full
 partition function of a strand of $n$ bases, define a function $Q$
 such that:
 \begin{equation}
-Q(i, j) = \text { sum of boltzmann factors for every structure contained between } i \text{ and } j.
+Q(i, j) = \text { sum of Boltzmann factors for every structure contained between } i \text{ and } j.
 \end{equation}
 The full partition computation can therefore be represented as the
 function $Q$ acting on the bounding two bases $1$ and $n$: 
@@ -44,7 +44,7 @@ If we now extend the strand by attaching a small hairpin to the end,
 as pictured in Figure \ref{fig:attachedHairpin}, there is no need to
 go back and recompute the energy of every single secondary structure,
 rather we can just multiply the already-computed partition function by
-the boltzmann factor of the hairpin turn (let $E(h)$ be the hairpin
+the Boltzmann factor of the hairpin turn (let $E(h)$ be the hairpin
 energy) to get the new partition function:
 \begin{figure}[h]
 \includegraphics[width=\textwidth]{attachedHairpin.eps}
@@ -72,7 +72,7 @@ The dynamic programming algorithm for computing the partition function
 of an RNA strands has several versions, depending on how in depth you
 go with the energy model. The simplest algorithms allow for only
 structures with nested base pairs. Nested means that the structure can
-be represented with the parenthesis, for example
+be represented with parenthesis, for example
 (((..((((....))))(((..)))..))), or without crossing pairs in expanded
 loop diagrams such as the ones in Figure
 \ref{fig:attachedHairpin}. Note that this kind of structure excludes
@@ -104,12 +104,12 @@ increases.
 \centering
 \includegraphics[width=.8\textwidth]{pMFE2.pdf}
 \caption{A plot of probability of the MFE state as computed $P(MFE) =
-  e^{-E_{min}/RT}/Z$ for sequences of many different lengths. For
+  e^{-E_{MFE}/RT}/Z$ for sequences of many different lengths. For
   sequences of reasonable length, even though it is the most probable
   state, the MFE probability approaches floating point error. This
   forces us to approach probabilities differently, using sums of
-  probabilities of many similar states instead of just one state. [TODO: where
-    does this data come from?]}
+  probabilities of many similar states instead of just one
+  state \cite{aalbertsCommunication}.}
 \label{fig:probMFE}
 \end{figure}
 The encourages us to treat the probabilities of secondary structures
@@ -141,20 +141,23 @@ positive predictive value by 46.5\% and sensitivity by 21.7\%. Figure
   analysis and plotted along 2 principle components. The MFE state is
   not in the most probably macrostate, neither is the ensemble
   centroid, but the macrostate centroid gives good predictions of
-  secondary structure. Figure from Ding, Chu, \& Lawrence (2005).}
+  secondary structure. The two axes are created by doing principle
+  component analysis on the base-pair matrix. Figure from Ding, Chu,
+  \& Lawrence (2005).}
 \label{fig:centroidFig}
 \end{figure}
 
-In all the clustering algoritms, since we must know boltzmann
+In all the clustering algoritms, since we must know Boltzmann
 statistics of different states, we must compute the partition
-function. In certain situations, such as partition function
-clustering, the partition function is recomputed several times. If the
-partition function takes on the order of hours or days to compute,
-this can make partition function clustering a major bottleneck in
-whatever process RNA secondary structure prediction is being used
-in. However in these situations it is also true that the partition
-function is recomputed with almost the same conditions, just certain
-pairs restricted. 
+function. In Aalberts and Jannen's \emph{Visualizing RNA base-pairing
+  probabilities with RNAbow diagrams}, the PF method clusters using
+partition function data, requiring the partition function to be
+recomputed several times. If the partition function takes on the order
+of hours or days to compute, this can make partition function
+clustering a major bottleneck in whatever process RNA secondary
+structure prediction is being used in. However in these situations it
+is also true that the partition function is recomputed with almost the
+same conditions, just certain pairs restricted.
 
 \begin{figure}[t]
 \centering
@@ -172,15 +175,14 @@ pairs restricted.
 
 We've been able to show via experiment that the partition function
 only admits roughly $O(n)$ pairs with probabilities above thresholds
-around the machine precision limit. If we have the partition function
-already computed, we can recompute it by only adding in pairs that
-have sufficient probability. We can also extend this method: if a good
-heuristic appears in the future, one that can eliminate a large number
-of pairs, while being computationally cheap, we should be able to use
-the results to speed up the partition function computation. This
-motivates a method of computing the partition function using a
-known-pairs heueristic to prune away unneccesary computation, and that
-is what we have implemented.
+around the machine precision limit. After the partition function is
+computed once, subsequent runs may ignore $O(n^2)$ pairs that have no
+sufficient probability. It suggests a general strategy to speed up the
+partition function, namely developing heuristics to eliminate
+improbable pairs in the initial computation. This motivates a method
+of computing the partition function using a known-pairs heueristic to
+prune away unneccesary computation, and that is what we have
+implemented.
 
 \section{The Computation}
 
@@ -191,19 +193,18 @@ $Q(i,j)$. Because the energy model for RNA is linear, $Q(i,j)$ can be
 expressed as a function of nearby members of this table. This function
 is called the recurrence relation for the partition function of
 RNA. Because the free energy model is so complicated and has gone
-through many iterations, differenct RNA folding software packages
+through many iterations, different RNA folding software packages
 implement different versions of the recurrence relation, and they vary
 widely in complexity. This version is as simple as possible, there is
 an energy penalty for starting a multiloop, $a$, and an energy penalty
 for keeping a base unpaired, $b$, otherwise we hold to the standard
 energy functions.
 
-The definitive representation of the recurrence relation for RNA was
-formulated in 1990 by J.S. McCaskill in his paper \emph{The
-  Equilibrium Partition Function and Base Pair Binding Probabilities
-  for RNA Secondary Structure} \cite{mccaskill1990equilibrium}. Here I
-will follow the clear presentation by Dirks and Pierce
-\cite{dirks2003partition}.
+McCaskill introduced the partition function recurrence relation for
+RNA in his classic 1990 paper \emph{The Equilibrium Partition Function
+  and Base Pair Binding Probabilities for RNA Secondary Structure}
+\cite{mccaskill1990equilibrium}. Here I will follow the clearer
+presentation by Dirks and Pierce \cite{dirks2003partition}.
 
 \begin{figure}[t]
 \centering
@@ -237,19 +238,21 @@ partition function must be summed over every combination of structures
 on the substrand $(i, d-1)$ as well as every structure that could form
 underneath the pair $(d,e)$. Define:
 \begin{equation}
-Q^b(i, j) = \text{sum of boltzmann factors for every structure contained underneath pair } (i,j)
+Q^b(i, j) = \text{sum of Boltzmann factors for every structure
+  contained underneath assumed pair } (i,j).
 \end{equation}
-Recalling Figure \ref{fig:attachedHairpin}, we can get every combination
-of such states by multiplying $Q(i, d-1)$ by $Q^b(d,e)$ and an energy
-penalty for leaving $(e+1, j)$ empty. Of course, it must be summed
-over all possible indices $d$ and $e$:
+$Q^b$ differs from $Q$ requiring that $i$ and $j$ be paired.
+Recalling Figure \ref{fig:attachedHairpin}, we can get every
+combination of such states by multiplying $Q(i, d-1)$ by $Q^b(d,e)$
+and an energy penalty for leaving $(e+1, j)$ empty. Of course, it must
+be summed over all possible indices $d$ and $e$:
 \begin{equation} 
 Q(i,j) = \overbrace{e^{-b(j-i+1)/RT}}^{\text{empty}} + \overbrace{\sum_{\substack{ d,e \\ i \leq d < e \leq j}}Q(i, d - 1) Q^b(d, e) e^{-b(j-e)/RT}}^{\text{rightmost pair}}. 
 \label{eq:Qij}
 \end{equation}
 
 To compute $Q^b(i,j)$ we sum over the 4 cases of loops that could form
-underneath the assumed pair $(i,j)$. This could mean a hairpin loop,
+underneath the pair $(i,j)$. This could mean a hairpin loop,
 with energy function $E_h$, a stack loop, with $E_s$, an interior
 loop, with $E_i$, or a multiloop with $a$, the multiloop penalty. For
 each new pair created, we must multiply in $Q^b$ for that section as
@@ -259,7 +262,7 @@ well, and for every open region created, $Q$ (see Figure
 \begin{split}
  Q^b(i, j) =& \overbrace{e^{-E_h(i,j)/RT}}^{\text{hairpin}} +
  \overbrace{e^{-E_s(i, j)/RT} Q^b(i+1, j-1)}^{\text{stack}} \\ 
-& + \overbrace{\sum_{\substack{d,e \\ i < d< e< j}} E_i(i, d, e, j)Q^b(d,e)}^{\text{internal}} \\ 
+& + \overbrace{\sum_{\substack{d,e \\ i < d< e< j}} e^{-E_i(i, d, e, j)/RT}Q^b(d,e)}^{\text{internal}} \\ 
 & + \overbrace{e^{-a/RT} \sum_{\substack{d,e \\ i < d< e< j}} Q(i+1, d-1) Q^b(d,e) e^{-b(j-e-1)/RT}}^{\text{multiloop}}.
 \end{split}
 \label{eq:Qbij}
@@ -270,13 +273,14 @@ $Q^b(d,e)$ for all $(d,e)$ such that $ i \leq d < e \leq j$, each of
 those functions is just a table lookup. Therefore the only
 compute-bounding term is the sum over $d$ and $e$, which makes
 computing $Q(i,j)$ an $O(n^2)$ computation, a big speed up over
-$O(1.8^n)$. The same goes for $Q^b(i,j)$. One catch is that in order
-to compute $Q(i,j)$ or $Q^b(i,j)$, you must compute all $O(n^2)$
-$Q(d,e)$'s and $Q^b(d,e)$'s on the inside, so the entire algorithm is
-actually $O(n^4)$ but there are known efficiency improvements that
-bring it down to $O(n^3)$. This thesis presents improvements that
-bring the algorithm down to $O(n^2)$, provided a good hueristic, in
-the next section.
+enumerating all $O(1.8^n)$ states. The same goes for $Q^b(i,j)$. One
+catch is that in order to compute $Q(i,j)$ or $Q^b(i,j)$, equation
+\ref{eq:Qbij} requires computing all $O(n^2)$ $Q(d,e)$'s and
+$Q^b(d,e)$'s on the inside, so the entire algorithm is actually
+$O(n^4)$ but Lyngs{\o} brought it down to $O(n^3)$ by restricting the
+lengths of internal loops \cite{lyngso2000rna}. This thesis presents
+improvements that bring the algorithm down to $O(n^2)$, provided a
+good heuristic, in the next section.
 
 \section{Efficient Partition Function}
 
@@ -288,40 +292,43 @@ that takes the index of a base as input and outputs a list of other
 bases it can pair to, where the length of this list is always very
 short and can be considered constant length in relation to the
 sequence length $n$. This is not an unreasonable assumption in certain
-cases. For example if we have already computed the partition function
-of the strand but are now restricting certain bases from pairing, as
-in Nestor PF clustering, we already know a lot about what pairs can
-form. Another possibility could be restricting the base pairs based on
-sequence alignment. We could also just restrict non-Watson-Crick pairs
-to start. Importantly, we have seen empirically that the list of pairs
-above a probability theshold for each base will be very short.
+cases see Figure \ref{fig:probThresh}. For example if we have already
+computed the partition function and wish to define macrostates around
+local minima as we will do in Chapter 4, the small number of pairs
+that are in the macrostate can speed computing the basin partition
+function. Another possibility could be restricting the base pairs
+based on sequence alignment. We could also just restrict
+non-Watson-Crick pairs to start. Importantly, we have seen empirically
+that the list of pairs above a probability theshold for each base will
+be very short.
 
-The problem terms of each computation are the sums over $d$ and
-$e$. In order to get the algorithm down to $O(n^2)$ each $Q(i,j)$ and
-$Q^b(i,j)$ must take constant time. Efficiency gains have already been
-seen by McCaskill by limiting the internal loop length, introducing
-the constraint that $(d-i) + (j-e) < L$ for some constant $L$. This
-way, as $n$ computation is limited to $O(L^2)$ which is a
-constant. That leaves only the multi-loop term to make a constant
-time computation. Using the hueristic, this is possible. Let us define
-a new function (and table) $Q^m(i, j)$ which is defined as (this time
-explicitly summing $d$ and $e$):
+The problem terms of each computation (equations \ref{eq:Qij} and
+\ref{eq:Qbij}) are the sums over $d$ and $e$. In order to get the
+algorithm down to $O(n^2)$ each $Q(i,j)$ and $Q^b(i,j)$ must take
+constant time. Efficiency gains have already been seen by McCaskill by
+limiting the internal loop length, introducing the constraint that
+$(d-i) + (j-e) < L$ for some constant $L$. This way, an $n^2$
+computation is limited to $O(L^2)$ which is a constant (although it
+could be a big one if $L=30$). That leaves only the multi-loop term to
+make a constant time computation. Using the heuristic, this is
+possible. Let us define a new function (and table) $Q^m(i, j)$ which
+is defined as (this time explicitly summing $d$ and $e$):
 \begin{equation}
-Q^m(i, j) = \sum_{d = i}^{j}\sum_{e = d+1}^{j} Q(i, d-1)Q^b(d,e)e^{-b(j-e)/RT}.
+Q^m(i, j) = \sum_{d = i}^{j-1}\sum_{e = d+1}^{j} Q(i, d-1)Q^b(d,e)e^{-b(j-e)/RT}.
 \end{equation}
 We can take the out all the terms which contain $e = j$ to split the
-formula into two parts (note that I limited the first term's $d$ sum
-to only go to $j-1$ because $d$ must always be less than $e$):
+formula into two parts (note that I can limit the first term's $d$ sum
+to only go to $j-2$ because $d$ must always be less than $e$):
 \begin{equation}
 \begin{split}
-Q^m(i, j) =& \sum_{d = i}^{j-1}\sum_{e = d+1}^{j-1} Q(i, d-1)Q^b(d,e)e^{-b(j-e)/RT} \\
+Q^m(i, j) =& \sum_{d = i}^{j-2}\sum_{e = d+1}^{j-1} Q(i, d-1)Q^b(d,e)e^{-b(j-e)/RT} \\
 &+ \sum_{d = i}^{j} Q(i, d-1)Q^b(d,j).
 \end{split}
 \end{equation}
-The first term in this new equation is the same thing
+The first term in this new equation is simply
 $Q^m(i,j-1)e^{-b/RT}$. In the second term, it is always implied that
 $d$ pairs with $j$, so we can substitute the summation index for our
-hueristic for $j$, $K(j)$, without losing anything. Therefore, our
+heuristic for $j$, $K(j)$, without losing anything. Therefore, our
 formula becomes:
 \begin{equation}
 Q^m(i, j) = Q^m(i, j -1) e^{-b/RT} + \sum_{k \in K(j)} Q(i, k - 1) Q^b(k, j).
@@ -329,7 +336,7 @@ Q^m(i, j) = Q^m(i, j -1) e^{-b/RT} + \sum_{k \in K(j)} Q(i, k - 1) Q^b(k, j).
 Now, we can examine the efficiency of computing $Q^m(i,j)$. The first
 term is a constant factor and the second is a sum over only a constant
 number of indices by our empirical assumptions about the
-hueristic. Therefore the computation of $Q^m$ can be treated as a
+heuristic. Therefore the computation of $Q^m$ can be treated as a
 constant time computation.
 
 Now the computation for $Q(i,j)$ becomes:
@@ -341,12 +348,12 @@ and for $Q^b(i,j)$:
 \begin{split}
  Q^b(i, j) =& e^{-E_h(i,j)/RT}+
 e^{-E_s(i, j)/RT} Q^b(i+1, j-1) \\ 
-& + \sum_{\substack{d,e \\ i < d< e< j\\ (d-i) + (j-e) < L}} E_i(i, d, e, j)Q^b(d,e) \\ 
+& + \sum_{\substack{d,e \\ i < d< e< j\\ (d-i) + (j-e) < L}} e^{-E_i(i, d, e, j)/RT}Q^b(d,e) \\ 
 & + e^{-a/RT}Q^m(i+1, d-1) .
 \end{split}
 \end{equation}
 
-So assisted by this hueristic we are able to reduce all table updates
+So assisted by this heuristic we are able to reduce all table updates
 to constant time computations. This means the algorithm is only
 limited by the number of $(i,j)$'s which grows with $O(n^2)$. 
 
@@ -373,16 +380,16 @@ get further reductions in runtime.
 \label{fig:pfResults}
 \end{figure}
 
-[TODO: include plot with different times for different probability
-thresholds]
+%[TODO: include plot with different times for different probability
+%thresholds]
 
-A large part of the verification of an improved algorithm is showing
-that it produces acceptable results compared to the old algorithm, as
-you can see in the plot, our algorithm gives the same results up to 1
-part in 1 million [TODO: check this]. Increasing the probability
-threshold changes the results by [TODO: find out].
+%A large part of the verification of an improved algorithm is showing
+%that it produces acceptable results compared to the old algorithm, as
+%you can see in the plot, our algorithm gives the same results up to 1
+%part in 1 million [TODO: check this]. Increasing the probability
+%threshold changes the results by [TODO: find out].
 
-[TODO: include plot of verification]
+%[TODO: include plot of verification]
 
 \section{Conclusion}
 
