@@ -151,5 +151,58 @@ Evangelakos for their support, good coversations, and friendship.
 Most of all I'd like to thank my parents and my family for always
 being there. No matter happens, I know I can come home to open arms.
 
+\newpage
+
+\section*{Executive Summary}
+
+Standard algorithms in computational biology compute the minimum free
+energy state of RNA. RNA is a polymer molecule that folds back on
+itself because its components chemically bind to one another,
+therefore the energy lanscape is very bumpy, with many local minima to
+get stuck in and cause disagreement with these predictions. Predicting
+the behavior of RNA based on macrostates, which are sets of states
+clustered around local minima, is a better tool for RNA secondary
+structure prediction. My research consisted of creating tools to
+identify macrostates, and improving upon algorithms for tools that
+already exist: the partition function algorithm and the stochastic
+traceback algorithm.
+
+Chapter 1 is an overview of the history of the field. It presents the
+energy model of RNA, which underlies all computational prediction of
+its thermodynamic variables. It is also large, complex, and important
+to understand in order to understand the algorithms in later chapters.
+
+Chapter 2 presents the algorithm to compute the partition function of
+RNA and my improvements to that algorithm, with the assistance of an
+allowed base-pairs heuristic. I show that one can signficantly speed
+up the computation this way using computer timing tests. 
+
+Chapter 3 presents the algorithm for sampling secondary structures
+according to the Boltzmann ensemble, called the stochastic traceback
+algorithm, and my improvments to that algorithm. These improvements
+mirror those in chapter 2, with the same kind of timing tests.
+
+Chapter 4 defines macrostates and examines two historical methods of
+classifying and computing macrostates including Ding and Lawrence's
+Sfold and Barriers from ViennaRNA. I then present Nestor, some past
+work from Bill Jannen with my advisor Daniel Aalberts. Then I present
+my own version of Nestor, splitting clusters based on partition
+function results, which I call the PF method of Nestor. Finally I
+describe SHAPE analysis on RNA, our interpretation and processing of
+that data, and compare the results found with the PF method of Nestor
+to the output of that processing. 
+
+Chapter 5 concludes and presents some future work, including doing the
+same optimizations mentioned in chapters 2 and 3 for the pseudoknot
+algorithm, which could greatly expand the predictive ability of
+secondary structure algorithm.
+
+At the end of this thesis, I hope that the reader has a very good
+understanding of the historical development of RNA secondary structure
+prediction algorithm, a good grasp on the algorithms especially my
+improvements, and a good idea of where further research could be done
+to push the field forward.
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % -*-latex-*-
