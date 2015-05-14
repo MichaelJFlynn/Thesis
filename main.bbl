@@ -2,6 +2,13 @@
   \newcommand{\singleletter}[1]{#1} \newcommand{\switchargs}[2]{#2#1}
 \begin{thebibliography}{10}
 
+\bibitem{aalbertsNestor}
+
+
+\bibitem{aalbertsCommunication}
+Daniel Aalberts.
+\newblock personal communication.
+
 \bibitem{aalberts2013visualizing}
 Daniel~P Aalberts and William~K Jannen.
 \newblock Visualizing rna base-pairing probabilities with rnabow diagrams.
@@ -11,6 +18,23 @@ Daniel~P Aalberts and William~K Jannen.
 Phaedra Agius, Kristin~P Bennett, and Michael Zuker.
 \newblock Comparing rna secondary structures using a relaxed base-pair score.
 \newblock {\em RNA}, 16(5):865--878, 2010.
+
+\bibitem{byrd1995limited}
+Richard~H Byrd, Peihuang Lu, Jorge Nocedal, and Ciyou Zhu.
+\newblock A limited memory algorithm for bound constrained optimization.
+\newblock {\em SIAM Journal on Scientific Computing}, 16(5):1190--1208, 1995.
+
+\bibitem{deigan2008accurate}
+Katherine~E Deigan, Tian~W Li, David~H Mathews, and Kevin~M Weeks.
+\newblock Accurate shape-directed rna structure determination.
+\newblock {\em Proceedings of the National Academy of Sciences}, pages
+  pnas--0806929106, 2008.
+
+\bibitem{ding2004sfold}
+Ye~Ding, Chi~Yu Chan, and Charles~E Lawrence.
+\newblock Sfold web server for statistical folding and rational design of
+  nucleic acids.
+\newblock {\em Nucleic acids research}, 32(suppl 2):W135--W141, 2004.
 
 \bibitem{ding2005rna}
 YE~Ding, Chi~Yu Chan, and Charles~E Lawrence.
@@ -48,6 +72,18 @@ Ivo~L Hofacker, Peter Schuster, and Peter~F Stadler.
 \newblock Combinatorics of rna secondary structures.
 \newblock {\em Discrete Applied Mathematics}, 88(1):207--237, 1998.
 
+\bibitem{kaufman2009finding}
+Leonard Kaufman and Peter~J Rousseeuw.
+\newblock {\em Finding groups in data: an introduction to cluster analysis},
+  volume 344.
+\newblock John Wiley \& Sons, 2009.
+
+\bibitem{kladwang2011two}
+Wipapat Kladwang, Christopher~C VanLang, Pablo Cordero, and Rhiju Das.
+\newblock A two-dimensional mutate-and-map strategy for non-coding rna
+  structure.
+\newblock {\em Nature chemistry}, 3(12):954--962, 2011.
+
 \bibitem{lyngso2000rna}
 Rune~B Lyngs{\o} and Christian~NS Pedersen.
 \newblock Rna pseudoknot prediction in energy-based models.
@@ -62,6 +98,12 @@ Martin Mann and Konstantin Klemm.
 Martin Mann, Marcel Kuchar{\'\i}k, Christoph Flamm, and Michael~T Wolfinger.
 \newblock Memory efficient rna energy landscape exploration.
 \newblock {\em Bioinformatics}, page btu337, 2014.
+
+\bibitem{mathews2004using}
+David~H Mathews.
+\newblock Using an rna secondary structure partition function to determine
+  confidence in base pairs predicted by free energy minimization.
+\newblock {\em Rna}, 10(8):1178--1190, 2004.
 
 \bibitem{mathews2006revolutions}
 David~H Mathews.
@@ -93,12 +135,31 @@ Ruth Nussinov and Ann~B Jacobson.
 \newblock {\em Proceedings of the National Academy of Sciences},
   77(11):6309--6313, 1980.
 
+\bibitem{steffen2006rnashapes}
+Peter Steffen, Bj{\"o}rn Vo{\ss}, Marc Rehmsmeier, Jens Reeder, and Robert
+  Giegerich.
+\newblock Rnashapes: an integrated rna analysis package based on abstract
+  shapes.
+\newblock {\em Bioinformatics}, 22(4):500--503, 2006.
+
+\bibitem{wilkinson2006selective}
+Kevin~A Wilkinson, Edward~J Merino, and Kevin~M Weeks.
+\newblock Selective 2 [prime]-hydroxyl acylation analyzed by primer extension
+  (shape): quantitative rna structure analysis at single nucleotide resolution.
+\newblock {\em Nature protocols}, 1(3):1610--1616, 2006.
+
 \bibitem{wolfinger2004efficient}
 Michael~T Wolfinger, W~Andreas Svrcek-Seiler, Christoph Flamm, Ivo~L Hofacker,
   and Peter~F Stadler.
 \newblock Efficient computation of rna folding dynamics.
 \newblock {\em Journal of Physics A: Mathematical and General}, 37(17):4731,
   2004.
+
+\bibitem{wuchty1999complete}
+Stefan Wuchty, Walter Fontana, Ivo~L Hofacker, Peter Schuster, et~al.
+\newblock Complete suboptimal folding of rna and the stability of secondary
+  structures.
+\newblock {\em Biopolymers}, 49(2):145--165, 1999.
 
 \bibitem{xia1998thermodynamic}
 Tianbing Xia, John SantaLucia, Mark~E Burkard, Ryszard Kierzek, Susan~J

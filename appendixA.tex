@@ -125,7 +125,7 @@ Q^m(i, j) = \sum_{k = i + 3}^{j - 5}\  \sum_{k' = k + 1}^{j- 1} Q(i + 1, k - 1) 
 \end{equation}
 
 \noindent
-Then we do as before and seperate out the $j$th term of the second sum. Note that there seems to be an additional sum needed to account that I've decreased the first sum's endpoint to $j-6$, but the sum ends up being from $k'= j-4$ to $k' = j -2$ and since $Q'$ for bases less than 4 apart is 0 due to hairpin loop rules, this sum is equal to zero.
+Then we do as before and separate out the $j$th term of the second sum. Note that there seems to be an additional sum needed to account that I've decreased the first sum's endpoint to $j-6$, but the sum ends up being from $k'= j-4$ to $k' = j -2$ and since $Q'$ for bases less than 4 apart is 0 due to hairpin loop rules, this sum is equal to zero.
 \begin{equation}
 \begin{split}
 Q^m(i, j) = \sum_{k = i + 3}^{j - 6}\  \sum_{k' = k + 1}^{j- 2} Q(i + 1, k - 1)  e^{-\frac{b(j - k'-1)}{RT} } \bigg [ \ 
@@ -166,7 +166,7 @@ number of bases it becomes overwhelmingly more likely to make a base
 pair that we can virtually ignore the energy of the the cases of
 length beyond a certain $L$.
 
-As for the seocnd sum, since the number of probable pairs for a base
+As for the second sum, since the number of probable pairs for a base
 $i$ has been shown empirically to be roughly constant, regardless of
 length, the second sum is essentially constant. What this all means is
 that all $O(n^2)$ computations of $Q(i,j)$'s are roughly constant

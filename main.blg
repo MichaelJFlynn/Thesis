@@ -1,0 +1,19 @@
+This is BibTeX, Version 0.99dThe top-level auxiliary file: main.aux
+A level-1 auxiliary file: cover.aux
+A level-1 auxiliary file: contents.aux
+A level-1 auxiliary file: chap1.aux
+A level-1 auxiliary file: chap2.aux
+A level-1 auxiliary file: chap3.aux
+A level-1 auxiliary file: chap4.aux
+A level-1 auxiliary file: conclusion.aux
+A level-1 auxiliary file: appendixA.aux
+A level-1 auxiliary file: biblio.aux
+The style file: plain.bst
+Database file #1: main.bib
+I was expecting a `,' or a `}'---line 51 of file main.bib
+ :   
+ :   title={Nestor},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+Warning--to sort, need author or key in aalbertsNestor
+(There was 1 error message)

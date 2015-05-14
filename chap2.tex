@@ -8,15 +8,15 @@
 \section{Introduction}
 
 The partition function for a thermodynamic system of fixed volume, in
-contact with a heat reservior with absolute temperature $T$, is
-\begin{equation} Z = \sum_s e^{-E(s)/ RT }, \end{equation}
-where $s$ denotes a particular state of the system, $E(s)$ is the
-energy of that state, and $RT$ is the gas constant multiplied by the
-temperature, specified above. Each particular term in the sum is
-called that state's Boltzmann factor. The probability of a state is
-then said to be its Boltzmann factor divided by the partition
-function, or
-\begin{equation} P(s) = \frac{1}{Z}e^{-E(s)/RT}.  \end{equation}
+contact with a heat reservoir with absolute temperature $T$, is
+\begin{equation} Z = \sum_s e^{- \beta \Delta G(s) }, \end{equation}
+where $s$ denotes a particular state of the system, $\Delta G(s)$ is
+the energy of that state, and $\beta = 1/RT$ is the reciprocal of the
+gas constant multiplied by the temperature, specified above. Each
+particular term in the sum is called that state's Boltzmann
+factor. The probability of a state is then said to be its Boltzmann
+factor divided by the partition function, or
+\begin{equation} P(s) = \frac{1}{Z}e^{-\beta \Delta G(s)}.  \end{equation}
 In our model an RNA strand is such a thermodynamic system, its
 secondary structure is its state, and the rest of the cell is the
 reservoir of heat. We assign each secondary structure an energy
@@ -24,31 +24,31 @@ according to the free energy model described in Chapter 1. According
 to this model, the energy of a secondary structure is the sum of the
 energies of its loops. 
 
-To compute the partition function we must sum up every possible
-secondary structure. There are many possible secondary structures, on
-the order of $1.8^n$ where $n$ is the sequence length. However, the
-computation of the partition function benefits greatly from the linear
-nature of the energy model: it allows us to recursively define the
-partition function. For example, say we have computed the full
-partition function of a strand of $n$ bases, define a function $Q$
-such that:
+To compute the partition function we must sum up the energies of every
+possible secondary structure. There are many possible secondary
+structures, on the order of $1.8^n$ where $n$ is the sequence
+length. However, the computation of the partition function benefits
+greatly from the linear nature of the energy model: it allows us to
+recursively define the partition function. For example, say we have
+computed the full partition function of a strand of $n$ bases, define
+a function $Q$ such that:
 \begin{equation}
 Q(i, j) = \text { sum of Boltzmann factors for every structure contained between } i \text{ and } j.
 \end{equation}
 The full partition computation can therefore be represented as the
 function $Q$ acting on the bounding two bases $1$ and $n$: 
 \begin{equation}
- Q(1, n) = \sum_{s \text{ on } [1,n]} e^{-E(s)/RT}.
+ Q(1, n) = \sum_{s \text{ on } [1,n]} e^{-\beta \Delta G(s)}.
 \end{equation}
 If we now extend the strand by attaching a small hairpin to the end,
 as pictured in Figure \ref{fig:attachedHairpin}, there is no need to
 go back and recompute the energy of every single secondary structure,
 rather we can just multiply the already-computed partition function by
-the Boltzmann factor of the hairpin turn (let $E(h)$ be the hairpin
+the Boltzmann factor of the hairpin turn (let $\Delta G(h)$ be the hairpin
 energy) to get the new partition function:
-\begin{figure}[h]
+\begin{figure}[t]
 \includegraphics[width=\textwidth]{attachedHairpin.eps}
-\caption{Extending the strand by adding an attached hairpin adds the
+\caption[Attaching a Hairpin]{Extending the strand by adding an attached hairpin adds the
   energy of the hairpin to each structure. To compute the new
   partition function $Q(1, n+5)$, we do not need to sum the energies
   of all possible structures again, we can simply use the old value,
@@ -58,7 +58,7 @@ energy) to get the new partition function:
 \label{fig:attachedHairpin}
 \end{figure}
 \begin{equation}
-Q(1, n + 5) = \sum_{s \text{ on } [1,n]} e^{-(E(s) + E(h))/RT} = Q(1, n)e^{-E(h)/RT}. 
+Q(1, n + 5) = \sum_{s \text{ on } [1,n]} e^{-\beta (\Delta G(s) + \Delta G(h))} = Q(1, n)e^{-\beta \Delta G(h)}. 
 \end{equation}
 This replaces an exponential-time computation (the sum), with a
 constant time computation (multiplying the pre-computed $Q(1, n)$ with
@@ -76,7 +76,7 @@ be represented with parenthesis, for example
 (((..((((....))))(((..)))..))), or without crossing pairs in expanded
 loop diagrams such as the ones in Figure
 \ref{fig:attachedHairpin}. Note that this kind of structure excludes
-pseudoknots.  If you ignore psuedoknots, which is standard in the
+pseudoknots.  If you ignore pseudoknots, which is standard in the
 field, and if you make an approximation that internal loops will never
 exceed a certain length, the fastest algorithm runs in $O(n^3)$. We
 believe that we can streamline this computation even more, taking
@@ -93,30 +93,31 @@ appendices.
 There exists an efficient algorithm to find the minimum free energy
 structure of a sequence. The fundamental algorithm for the MFE was
 developed by Zuker and Steigler in 1981
-\cite{zuker1981optimal}. However, perhaps counterintuitively, the MFE
-structure is not always the structure that is found in nature, even
-though natural systems tend to their lowest energy state. It is less
-counterintuitive after seeing Figure \ref{fig:probMFE}. The
-probability of any individual state is bounded from above by the MFE,
-which approaches zero very quickly as the length of the sequence
-increases.
+\cite{zuker1981optimal}. However, perhaps counter-intuitively, the MFE
+structure does not always match the results of structure determination
+experiments, even though natural systems tend to their lowest energy
+state. It is less counterintuitive after seeing Figure
+\ref{fig:probMFE}. The probability of any individual state is bounded
+from above by the MFE, which approaches zero very quickly as the
+length of the sequence increases.
 \begin{figure}[t]
 \centering
 \includegraphics[width=.8\textwidth]{pMFE2.pdf}
-\caption{A plot of probability of the MFE state as computed $P(MFE) =
-  e^{-E_{MFE}/RT}/Z$ for sequences of many different lengths. For
+\caption[MFE Probability]{A plot of probability of the MFE state as computed $P(MFE) =
+  e^{-\beta E_{MFE}}/Z$ for sequences of many different lengths. For
   sequences of reasonable length, even though it is the most probable
   state, the MFE probability approaches floating point error. This
   forces us to approach probabilities differently, using sums of
-  probabilities of many similar states instead of just one
-  state \cite{aalbertsCommunication}.}
+  probabilities of many similar states instead of just one state
+  \cite{aalbertsCommunication}.}
 \label{fig:probMFE}
 \end{figure}
 The encourages us to treat the probabilities of secondary structures
 given to us by Boltzmann statistics as probability densities instead
-of actual probabilities. The structure that is found in nature is most
-likely going to be from the most probable macrostate, where we define
-macrostate as following:
+of actual probabilities. The behavior of an RNA strand, and therefore
+the properties that are measured, are probably going to be drawn from
+the most probable macrostate or a combination of macrostates in
+equilibrium, where macrostate is defined:
 \begin{description}
 \item[Macrostate:] A set of RNA secondary structures sufficiently
   close to a local energy minimum structure $s_{min}$. 
@@ -128,7 +129,7 @@ computing RNA macrostates (see Clustering chapter).
 This logic was presented by Ye Ding, Chi Yu Chan, and Charles
 E. Lawrence in their 2005 paper ``RNA secondary structure prediction
 by centroids in a Boltzmann weighted ensemble''
-\cite{ding2005rna}. What they found that, as suspected, the MFE state
+\cite{ding2005rna}. They found that, as suspected, the MFE state
 was not always a member of the most probable macrostate. Using a
 method based on centroids of statistically sampled states, they found
 that their method made 30\% fewer prediction errors, improving
@@ -137,7 +138,7 @@ positive predictive value by 46.5\% and sensitivity by 21.7\%. Figure
 \begin{figure}[t]
 \centering
 \includegraphics[width=.8\textwidth]{ensemble-centroid.jpg}
-\caption{An RNA strand with mutliple macrostates, found by clustering
+\caption[Clustering analysis]{An RNA strand with multiple macrostates, found by clustering
   analysis and plotted along 2 principle components. The MFE state is
   not in the most probably macrostate, neither is the ensemble
   centroid, but the macrostate centroid gives good predictions of
@@ -147,29 +148,29 @@ positive predictive value by 46.5\% and sensitivity by 21.7\%. Figure
 \label{fig:centroidFig}
 \end{figure}
 
-In all the clustering algoritms, since we must know Boltzmann
-statistics of different states, we must compute the partition
-function. In Aalberts and Jannen's \emph{Visualizing RNA base-pairing
-  probabilities with RNAbow diagrams}, the PF method clusters using
-partition function data, requiring the partition function to be
-recomputed several times. If the partition function takes on the order
-of hours or days to compute, this can make partition function
-clustering a major bottleneck in whatever process RNA secondary
-structure prediction is being used in. However in these situations it
-is also true that the partition function is recomputed with almost the
-same conditions, just certain pairs restricted.
+In every clustering algorithm, since we must know Boltzmann statistics
+of different states, we must compute the partition function. The PF
+method of Chapter 4 clusters using partition function data, requiring
+the partition function to be recomputed several times. If the
+partition function takes on the order of hours or days to compute,
+this can make partition function clustering a major bottleneck in
+whatever process RNA secondary structure prediction is being used
+in. However in these situations it is also true that the partition
+function is recomputed with almost the same conditions, just with
+certain pairs restricted.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=.8\textwidth]{PijTheta5.eps} 
-\caption{A plot of `number of pairs with probability greater than
-  colored threshhold' vs length of sequence. If there is no threshold,
-  the number of pairs possible goes up like $n^2$, but even with small
-  thresholds such as requiring a pair to have probability greater than
-  $10^{-8}$, the number of possible pairs goes flat as $n$
-  increases. Therefore, a great amount of efficiency can be gained by
-  restricting the pairs under consideration, while not sacrificing
-  much accuracy since the thresholds are so low. }
+\caption[Number of probable pairs above threshold $\theta$]{A plot of
+  `number of pairs with probability greater than colored threshold'
+  vs length of sequence. If there is no threshold, the number of pairs
+  possible goes up like $n^2$, but even with small thresholds such as
+  requiring a pair to have probability greater than $10^{-8}$, the
+  number of possible pairs goes flat as $n$ increases. Therefore, a
+  great amount of efficiency can be gained by restricting the pairs
+  under consideration, while not sacrificing much accuracy since the
+  thresholds are so low. }
 \label{fig:probThresh}
 \end{figure}
 
@@ -180,22 +181,22 @@ computed once, subsequent runs may ignore $O(n^2)$ pairs that have no
 sufficient probability. It suggests a general strategy to speed up the
 partition function, namely developing heuristics to eliminate
 improbable pairs in the initial computation. This motivates a method
-of computing the partition function using a known-pairs heueristic to
-prune away unneccesary computation, and that is what we have
+of computing the partition function using a known-pairs heuristic to
+prune away unnecessary computation, and that is what we have
 implemented.
 
 \section{The Computation}
 
 The standard way of computing the partition function involves filling
 out a table where the $(i,j)$th member represents the partition
-function for the substrand from base $i$ to base $j$,
+function for the sub-strand from base $i$ to base $j$,
 $Q(i,j)$. Because the energy model for RNA is linear, $Q(i,j)$ can be
 expressed as a function of nearby members of this table. This function
 is called the recurrence relation for the partition function of
 RNA. Because the free energy model is so complicated and has gone
 through many iterations, different RNA folding software packages
 implement different versions of the recurrence relation, and they vary
-widely in complexity. This version is as simple as possible, there is
+widely in complexity. This version is as simple as possible: there is
 an energy penalty for starting a multiloop, $a$, and an energy penalty
 for keeping a base unpaired, $b$, otherwise we hold to the standard
 energy functions.
@@ -209,7 +210,7 @@ presentation by Dirks and Pierce \cite{dirks2003partition}.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{QijnewRecurrence.eps}
-\caption{The recurrence relation for $Q(i,j)$. When we compute
+\caption[$Q(i,j)$ Recurrence]{The recurrence relation for $Q(i,j)$. When we compute
   $Q(i,j)$ we only need to consider two cases, and add them together:
   either the strand will be empty of pairs, or there must be a
   rightmost pair followed plus whatever else is left, which can be
@@ -222,7 +223,7 @@ presentation by Dirks and Pierce \cite{dirks2003partition}.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{QbijRecurrence.eps}
-\caption{The recurrence relation for $Q^b(i,j)$. We consider 4 cases,
+\caption[$Q^b(i,j)$ Recurrence]{The recurrence relation for $Q^b(i,j)$. We consider 4 cases,
   corresponding to each of the type of loop that could form under the
   $(i,j)$ pair, and add them together. The loop could form a hairpin,
   a stack loop, an internal loop, or a multi loop. The mathematical
@@ -235,7 +236,7 @@ together, either the strand is empty on that interval or it has a
 rightmost pair $(d,e)$ (see Figure
 \ref{fig:recurrenceRelationsQij}). If it has a rightmost pair, the
 partition function must be summed over every combination of structures
-on the substrand $(i, d-1)$ as well as every structure that could form
+on the sub-strand $(i, d-1)$ as well as every structure that could form
 underneath the pair $(d,e)$. Define:
 \begin{equation}
 Q^b(i, j) = \text{sum of Boltzmann factors for every structure
@@ -247,7 +248,7 @@ combination of such states by multiplying $Q(i, d-1)$ by $Q^b(d,e)$
 and an energy penalty for leaving $(e+1, j)$ empty. Of course, it must
 be summed over all possible indices $d$ and $e$:
 \begin{equation} 
-Q(i,j) = \overbrace{e^{-b(j-i+1)/RT}}^{\text{empty}} + \overbrace{\sum_{\substack{ d,e \\ i \leq d < e \leq j}}Q(i, d - 1) Q^b(d, e) e^{-b(j-e)/RT}}^{\text{rightmost pair}}. 
+Q(i,j) = \overbrace{e^{-\beta b(j-i+1)}}^{\text{empty}} + \overbrace{\sum_{\substack{ d,e \\ i \leq d < e \leq j}}Q(i, d - 1) Q^b(d, e) e^{-\beta b(j-e)}}^{\text{rightmost pair}}. 
 \label{eq:Qij}
 \end{equation}
 
@@ -260,10 +261,10 @@ well, and for every open region created, $Q$ (see Figure
 \ref{fig:recurrenceRelationsQbij}).
 \begin{equation}
 \begin{split}
- Q^b(i, j) =& \overbrace{e^{-E_h(i,j)/RT}}^{\text{hairpin}} +
- \overbrace{e^{-E_s(i, j)/RT} Q^b(i+1, j-1)}^{\text{stack}} \\ 
-& + \overbrace{\sum_{\substack{d,e \\ i < d< e< j}} e^{-E_i(i, d, e, j)/RT}Q^b(d,e)}^{\text{internal}} \\ 
-& + \overbrace{e^{-a/RT} \sum_{\substack{d,e \\ i < d< e< j}} Q(i+1, d-1) Q^b(d,e) e^{-b(j-e-1)/RT}}^{\text{multiloop}}.
+ Q^b(i, j) =& \overbrace{e^{-\beta E_h(i,j)}}^{\text{hairpin}} +
+ \overbrace{e^{-\beta E_s(i, j)} Q^b(i+1, j-1)}^{\text{stack}} \\ 
+& + \overbrace{\sum_{\substack{d,e \\ i < d< e< j}} e^{-\beta E_i(i, d, e, j)}Q^b(d,e)}^{\text{internal}} \\ 
+& + \overbrace{e^{-\beta a} \sum_{\substack{d,e \\ i < d< e< j}} Q(i+1, d-1) Q^b(d,e) e^{-\beta b(j-e-1)}}^{\text{multiloop}}.
 \end{split}
 \label{eq:Qbij}
 \end{equation}
@@ -284,7 +285,7 @@ good heuristic, in the next section.
 
 \section{Efficient Partition Function}
 
-Let us assume that we have a huerstic of the form of a function 
+Let us assume that we have a heuristic of the form of a function 
 \begin{equation}
 K : \text{Base Index} \to \text{[Base Index]},
 \end{equation}
@@ -299,7 +300,7 @@ that are in the macrostate can speed computing the basin partition
 function. Another possibility could be restricting the base pairs
 based on sequence alignment. We could also just restrict
 non-Watson-Crick pairs to start. Importantly, we have seen empirically
-that the list of pairs above a probability theshold for each base will
+that the list of pairs above a probability threshold for each base will
 be very short.
 
 The problem terms of each computation (equations \ref{eq:Qij} and
@@ -314,24 +315,24 @@ make a constant time computation. Using the heuristic, this is
 possible. Let us define a new function (and table) $Q^m(i, j)$ which
 is defined as (this time explicitly summing $d$ and $e$):
 \begin{equation}
-Q^m(i, j) = \sum_{d = i}^{j-1}\sum_{e = d+1}^{j} Q(i, d-1)Q^b(d,e)e^{-b(j-e)/RT}.
+Q^m(i, j) = \sum_{d = i}^{j-1}\sum_{e = d+1}^{j} Q(i, d-1)Q^b(d,e)e^{-\beta b(j-e)}.
 \end{equation}
 We can take the out all the terms which contain $e = j$ to split the
 formula into two parts (note that I can limit the first term's $d$ sum
 to only go to $j-2$ because $d$ must always be less than $e$):
 \begin{equation}
 \begin{split}
-Q^m(i, j) =& \sum_{d = i}^{j-2}\sum_{e = d+1}^{j-1} Q(i, d-1)Q^b(d,e)e^{-b(j-e)/RT} \\
+Q^m(i, j) =& \sum_{d = i}^{j-2}\sum_{e = d+1}^{j-1} Q(i, d-1)Q^b(d,e)e^{-\beta b(j-e)} \\
 &+ \sum_{d = i}^{j} Q(i, d-1)Q^b(d,j).
 \end{split}
 \end{equation}
 The first term in this new equation is simply
-$Q^m(i,j-1)e^{-b/RT}$. In the second term, it is always implied that
+$Q^m(i,j-1)e^{-\beta b}$. In the second term, it is always implied that
 $d$ pairs with $j$, so we can substitute the summation index for our
 heuristic for $j$, $K(j)$, without losing anything. Therefore, our
 formula becomes:
 \begin{equation}
-Q^m(i, j) = Q^m(i, j -1) e^{-b/RT} + \sum_{k \in K(j)} Q(i, k - 1) Q^b(k, j).
+Q^m(i, j) = Q^m(i, j -1) e^{-\beta b} + \sum_{k \in K(j)} Q(i, k - 1) Q^b(k, j).
 \end{equation}
 Now, we can examine the efficiency of computing $Q^m(i,j)$. The first
 term is a constant factor and the second is a sum over only a constant
@@ -341,15 +342,15 @@ constant time computation.
 
 Now the computation for $Q(i,j)$ becomes:
 \begin{equation}
-Q(i,j) = e^{-b(j-i+1)/RT} + Q^m(i, j),
+Q(i,j) = e^{-\beta b(j-i+1)} + Q^m(i, j),
 \end{equation} 
 and for $Q^b(i,j)$:
 \begin{equation}
 \begin{split}
- Q^b(i, j) =& e^{-E_h(i,j)/RT}+
-e^{-E_s(i, j)/RT} Q^b(i+1, j-1) \\ 
-& + \sum_{\substack{d,e \\ i < d< e< j\\ (d-i) + (j-e) < L}} e^{-E_i(i, d, e, j)/RT}Q^b(d,e) \\ 
-& + e^{-a/RT}Q^m(i+1, d-1) .
+ Q^b(i, j) =& e^{-\beta E_h(i,j)}+
+e^{-\beta E_s(i, j)} Q^b(i+1, j-1) \\ 
+& + \sum_{\substack{d,e \\ i < d< e< j\\ (d-i) + (j-e) < L}} e^{-\beta E_i(i, d, e, j)}Q^b(d,e) \\ 
+& + e^{-\beta a}Q^m(i+1, d-1) .
 \end{split}
 \end{equation}
 
@@ -372,7 +373,7 @@ get further reductions in runtime.
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{partitionTimePlot.eps} 
-\caption{Computation time vs length for random sequences, the old
+\caption[Partition Function Speedups]{Computation time vs length for random sequences, the old
   $O(n^3)$ partition function run against the new $O(n^2)$ partition
   function. Not quite the results we were after, however, we can
   always set the max internal loop length $L$ to a lower value and

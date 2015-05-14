@@ -17,9 +17,8 @@ free energy model, and although algorithms existed for generating
 suboptimal structures, they either sampled a very limited set of
 states \cite{zuker1989finding}, or had exponential runtime and the
 output did not have the same distribution as the physical ensemble of
-states \cite{wuchty199complete}. Structures sampled according to this
-algorithm can be clustered into macrostates, whos properties can be
-examined.
+states \cite{wuchty1999complete}. Structures sampled according to this
+algorithm can be clustered into macrostates.
 
 The method first computes the partition function, then it ``traces
 back'' over the contents of the tables calculated during that
@@ -28,7 +27,7 @@ contain information about the conditional probabilities of bases
 pairing. Starting from a bare, undetermined strand at the top of the
 recurrence relations, the stochastic traceback samples pairs between
 bases until a structure is formed such that its probability of it
-being created by the algorithm is equal to its boltzmann weight
+being created by the algorithm is equal to its Boltzmann weight
 $e^{-E(s)/RT}/Z$.
 
 The general principle of the backwards trace is that,
@@ -79,7 +78,7 @@ structure and so on.
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{stochastic-alg-diagram.jpg}
-\caption{Flowchart of the algorithm from Ding and Lawrence's paper
+\caption[Stochastic Traceback Flowchart]{Flowchart of the algorithm from Ding and Lawrence's paper
   \cite{ding2003statistical}. Basically: if we are on a $Q(i,j)$
   recursion, sample either an empty section or a rightmost pair. For
   $Q^b$ choose a loop type and corresponding pairs if
@@ -100,7 +99,7 @@ $true$ if we have determined that $i$ and $j$ are paired, or $false$
 otherwise. The second stack, B, is where we'll collect pairs and
 unpaired bases for one sample.
 
-\begin{figure}[h]
+\begin{figure}[t]
 \bfseries\small
 The initialization of the algorithm is to push $\{(1, n), false\}$
 onto the stack. From there the algorithm repeats the following steps:
@@ -123,9 +122,9 @@ onto the stack. From there the algorithm repeats the following steps:
 \item If stack A is empty, the pairs and unpaired bases in stack B
   become a sampled structure. Reinitialize for additional samples.
 \end{enumerate}
-
-\caption{The stochastic traceback algorithm is implemented by pushing
-  the recursive elements back onto the stack to sample a full structure. }
+\caption[Stochastic Traceback Pseudocode]{The stochastic traceback
+  algorithm is implemented by pushing the recursive elements back onto
+  the stack to sample a full structure. }
 \label{fig:stochastic-pseudocode}
 \end{figure}
 
@@ -133,7 +132,7 @@ The algorithm displayed in Figure \ref{fig:stochastic-pseudocode} is
 what gets the job done. The probability of the structure is equal to
 the product of the probabilities that determined its pairs and empty
 regions, but if you follow the recursion all the way down you see that
-this results in just the boltzmann factor for the structure:
+this results in just the Boltzmann factor for the structure:
 \begin{equation}
 P(s) = \prod_{\text{cases}} \frac{P(\text{case})}{Q(\text{case})} =
 \frac{1}{Z} e^{-E(s)/RT}.
@@ -150,7 +149,7 @@ probable state, can still have astronomically unlikely probabilities
 on average for typical strands of reasonable length (Figure
 \ref{fig:probMFE}). The more important concept in understanding the
 physical behavior of an RNA strand is therefore the overall shape of
-the energy landscape. Althogh the probability of any individual
+the energy landscape. Although the probability of any individual
 structure might be infinitesimally small, there can be shown to be
 relatively few large basins containing clusters of similar foldings.
 The consensus structures and the difference between the consensus
@@ -200,22 +199,22 @@ P(\text{goto } Q^m |i, j ) &= \frac{ e^{-a/RT} Q^m(i,j) } { Q^b(i,j)}.
 As one can see from Figure \ref{fig:stochOvN}, the speedup is
 enormous. For randomly sampled sequences up to lengths in the
 thousands, the old stochastic timing grows quadratically, while the
-new method flatlines below it. The log-log plot in Figure
+new method flat-lines below it. The log-log plot in Figure
 \ref{fig:stochLogLog} shows that the algorithm is not quite $O(n)$,
 this is probably because there is a probability to recurse down
 different cases of $Q^m$, however it is still quite below the old
 slope.
 \begin{figure}[t]
 \includegraphics[width=\textwidth]{stochOldvNew.eps}
-\caption{A comparison of the computation time between the partition
-  function computation, and stochastic tracebacks of 1000 samples with
-  the Old algorithm and the new algorithm. The new algorithm is much
-  faster.}
+\caption[Stochastic Traceback Speedups]{A comparison of the
+  computation time between the partition function computation, and
+  stochastic tracebacks of 1000 samples with the Old algorithm and the
+  new algorithm. The new algorithm is much faster.}
 \label{fig:stochOvN}
 \end{figure}
 \begin{figure}[t]
 \includegraphics[width=\textwidth]{stochloglog.eps}
-\caption{Log-Log plots of the timings in Figure
+\caption[Stochastic Traceback Speedups Log-Log Plot]{Log-Log plots of the timings in Figure
   \ref{fig:stochOvN}. The new stochastic algorithm slope is slightly
   higher than 1, but not much. }
 \label{fig:stochLogLog}
@@ -226,11 +225,12 @@ probabilities. Verification plot Figure \ref{fig:stochV} attempts to answer that
 question.
 \begin{figure}
 \includegraphics[width=\textwidth]{newzscores.png}
-\caption{A plot of the difference between the partition function
-  probability and the stochastic traceback probability of a base pair
-  according to the new algorithm. According to the number of states,
-  there should be 30 states above 0 probability that cross the
-  horizontal lines, there are less than 30.}
+\caption[Stochastic Traceback Verification]{A plot of the difference
+  between the partition function probability and the stochastic
+  traceback probability of a base pair according to the new
+  algorithm. According to the number of states, there should be 30
+  states above 0 probability that cross the horizontal lines, there
+  are less than 30.}
 \label{fig:stochV}
 \end{figure}
 
@@ -238,11 +238,10 @@ What we would expect to see from these plots, is that for a given
 base, we would expect to see it pair with other bases with
 probabilities given by the partition function as one can see. Of
 course there is sampling error, so each bin represents a sampling from
-a Bernoulli distribution. For $n^2$ samples, we would expect [Todo: find
-out what error we expect] error. The number of samples that violate
-the bounds, do not deviate much from what we would expect from doing
-$n^2$ experiments, so I think we can confidently say that the new
-algorithm is making the correct computation.
+a Bernoulli distribution. The number of samples that violate the
+bounds do not deviate much from what we would expect from doing $n^2$
+experiments, so I think we can confidently say that the new algorithm
+is making the correct computation.
 
 %[TODO: Add demonstration of full RAM sampling]
 

@@ -11,9 +11,18 @@ interested in doing RNA structure research in the future. Predicting
 RNA structure is a very interesting and difficult problem to solve,
 but it also contains a variety of open problems that someone new to
 the field can jump in and solve. I was very lucky to have been able to
-jump in and take some of the low hanging fruit. In addition, I think
-my research has opened up many more opportunities for future
-researchers to grab more low hanging fruit.
+jump in and take some of the low hanging fruit. Making very small
+changes, I was able to make the partition function algorithm and the
+stochastic traceback algorithm much more efficient. These improvements
+are such that if a good known base-pairs heuristic is found, the
+partition function may be computed in $O(n^2)$ time. I developed
+NestorPF, which clusters structures based on a non-nestedness measure
+and calculates macrostate probabilities using an additional partition
+function computation. I also made use of recent mutate-and-map
+experiments to confirm predictions of NestorPF using a novel data
+analysis strategy. In addition, I think my research has opened up many
+more opportunities for future researchers to grab more low hanging
+fruit.
 
 One of these is combining Nestor and Barriers. Nestor is a great top
 down approach that focuses on the highest energy conflict between
@@ -29,7 +38,7 @@ improvements to the standard partition function are less significant
 since computers are fast enough to compute the largest strands in
 reasonable time anyways. This is not true for pseudoknotted partition
 functions, and an efficient algorithm could bring it into the realm of
-the feasible. This is what is discussed in the next section. 
+the feasible. This is what is discussed in the next section.
 
 \section{Future work: Pseudoknot Algorithm}
 
@@ -52,7 +61,7 @@ computation scales much worse when pseudoknots are included.
 
 In general, computation of pseudoknotted structures is hard. In fact,
 the problem has been shown to be NP-Complete. Algorithms
-to perform the computation for a signficiant subset of pseudoknots
+to perform the computation for a significant subset of pseudoknots
 have been designed, most notably by Dirks and Pierce, who have
 specified an $O(n^8)$ algorithm and a $O(n^5)$ simplification of that
 algorithm, using the same approximations used to reduce the complexity
@@ -61,7 +70,7 @@ of the internal loop energy computation.
 I believe the heuristic approach of only iterating over allowed pairs
 will be able to significantly speed up the pseudoknot
 computation. This could be truly revolutionary, because there is no
-software that currrently includes pseudoknots in the computation of
+software that currently includes pseudoknots in the computation of
 the partition function. Since the algorithms seem to perform the worst
 in high-pseudoknot structure groups, this could lead to a significant
 improvement in RNA structure prediction. 

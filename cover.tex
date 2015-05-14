@@ -45,7 +45,7 @@
 % however the specifications can change.  We recommend that you verify the
 % layout of your title page with your thesis advisor and/or the MIT 
 % Libraries before printing your final copy.
-\title{RNA Macrostates and Computation Tools}
+\title{RNA Macrostates and Computational Tools}
 
 \author{Michael Flynn}
 % If you wish to list your previous degrees on the cover page, use the 
@@ -140,68 +140,129 @@ Freund, and Brent Yorgey for their patience as well, and for making
 some of my favorite classes at Williams.
 
 I'd like to thank Michael Zuker and David Mathews for their
-correspondance and help getting started in the field of RNA secondary
+correspondence and help getting started in the field of RNA secondary
 structure research. Thank you to Nick Markham for writing a very clear
 Ph. D. thesis. 
 
 I'd like to thank my friends including Maoli Vizcaino for keeping me
 company while I toil, Tony Blanco, Qadir Forbes, JL Etienne and Dan
-Evangelakos for their support, good coversations, and friendship. 
+Evangelakos for their support, good conversations, and friendship. 
 
-Most of all I'd like to thank my parents and my family for always
+Most of all I'd like to thank my parents Michell and James Flynn and the rest of my family Matt, Emma, Daniel, Genny, Elizabeth, Marie, Elise, and Lily for always
 being there. No matter happens, I know I can come home to open arms.
 
 \newpage
 
 \section*{Executive Summary}
 
-Standard algorithms in computational biology compute the minimum free
-energy state of RNA. RNA is a polymer molecule that folds back on
-itself because its components chemically bind to one another,
-therefore the energy lanscape is very bumpy, with many local minima to
-get stuck in and cause disagreement with these predictions. Predicting
-the behavior of RNA based on macrostates, which are sets of states
-clustered around local minima, is a better tool for RNA secondary
-structure prediction. My research consisted of creating tools to
-identify macrostates, and improving upon algorithms for tools that
-already exist: the partition function algorithm and the stochastic
-traceback algorithm.
+RNA is a biological polymer built from monomers that can form
+basepairs with each other. There are a multitude of possible folds,
+including many local free energy minima. Computational tools exist for
+finding the minimum free energy state (MFE) and computing the
+probability for a given pair from the partition function. A
+significant motivation for this thesis is the current movement away
+from looking at RNA as a molecule with a single folding determined by
+the MFE state to looking at RNA as a system in equilibrium between
+several different macrostates with possibly degenerate free
+energies. Macrostates can be defined as a set of foldings sufficiently
+close to a local minimum.
 
-Chapter 1 is an overview of the history of the field. It presents the
-energy model of RNA, which underlies all computational prediction of
-its thermodynamic variables. It is also large, complex, and important
-to understand in order to understand the algorithms in later chapters.
+This thesis describes several tools to build macrostates and compute
+their partition functions. In the process we also improve upon the
+partition function and stochastic traceback algorithms. These
+algorithmic improvements restructure the computations into equivalent
+formulations where each base iterates over a list of other bases it
+can pair to. By default, we can assume nothing and check every case,
+like the current algorithm does, but restricting the allowed pairs for
+a base can eliminate large amounts of unnecessary computation. This is
+very reasonable in practice, as Figure \ref{fig:probThresh1} shows.
+To restrict to probable pairs introduces minimal error, but is an
+order of magnitude faster. The most significant results of this thesis
+are the derivation of these new formulations and their
+implementations. By eliminating pairs below a reasonable probability
+threshold like $\theta = 10^{-8}$, massive speedups can be seen that
+cost very small amounts of error as illustrated by Figures
+\ref{fig:pfResults1} and \ref{fig:stochOvN1}.
+
+Other results of this thesis include an algorithm to predict
+macrostates (NestorPF) and a method of clustering analysis on SHAPE
+reactivity data in mutate-and-map experiments. NestorPF uses a measure
+called non-nestedness to split ensembles recursively. The SHAPE data
+analysis is important because, unlike most experimental procedures in
+RNA structure determinations, SHAPE reactivity provides a softer
+constraint on structure where the strength of a signal can be
+interpreted as a probability instead of as a determined pair or not. 
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=.8\textwidth]{PijTheta5.eps} 
+\caption[Number of probable pairs above threshold $\theta$]{A plot of
+  `number of pairs with probability greater than colored threshold
+  vs length of sequence. If there is no threshold, the number of pairs
+  possible goes up like $n^2$, but even with small thresholds such as
+  requiring a pair to have probability greater than $10^{-8}$, the
+  number of possible pairs goes flat as $n$ increases. Therefore, a
+  great amount of efficiency can be gained by restricting the pairs
+  under consideration, while not sacrificing much accuracy since the
+  thresholds are so low. }
+\label{fig:probThresh1}
+\end{figure}
+\begin{figure}[t]
+\centering
+\includegraphics[width=.75\textwidth]{partitionTimePlot.eps} 
+\caption[Partition Function Speedups]{Computation time vs length for
+  random sequences, the old $O(n^3)$ partition function run against
+  the new $O(n^2)$ partition function. Not quite the results we were
+  after, however, we can always set the max internal loop length $L$
+  to a lower value and increase the probability threshold $\theta$.}
+\label{fig:pfResults1}
+\end{figure}
+\begin{figure}[t]
+\centering
+\includegraphics[width=.75\textwidth]{stochOldvNew.eps}
+\caption[Stochastic Traceback Speedups]{A comparison of the
+  computation time between the partition function computation, and
+  stochastic tracebacks of 1000 samples with the Old algorithm and the
+  new algorithm. The new algorithm is much faster.}
+\label{fig:stochOvN1}
+\end{figure}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{Nestor-Heatmap-agreement.eps}
+\caption[Nestor-Reactivity Agreement]{ Mutate-and-map experimental
+  results are plotted on top of an RNAbow. In places where the
+  dominant blue cluster is disrupted, the red cluster becomes
+  dominant. The alignment of the stems with the dark lines on the
+  heatmap show agreement between Nestor and experiment.}
+\label{fig:Nestor-Heatmap-agreement}
+\end{figure}
+In Chapter 1, I describe the RNA free energy model and its
+implementation in classic RNA folding algorithms. The model is large,
+complex, and important to understand in order to understand the
+algorithms in later chapters.
 
 Chapter 2 presents the algorithm to compute the partition function of
-RNA and my improvements to that algorithm, with the assistance of an
-allowed base-pairs heuristic. I show that one can signficantly speed
-up the computation this way using computer timing tests. 
+RNA and my improvements to that algorithm. I show that with an allowed
+base-pairs heuristic, we can significantly speed up the computation.
 
 Chapter 3 presents the algorithm for sampling secondary structures
 according to the Boltzmann ensemble, called the stochastic traceback
-algorithm, and my improvments to that algorithm. These improvements
-mirror those in chapter 2, with the same kind of timing tests.
+algorithm, and my improvements to that algorithm. These improvements
+mirror those in chapter 2.
 
-Chapter 4 defines macrostates and examines two historical methods of
-classifying and computing macrostates including Ding and Lawrence's
-Sfold and Barriers from ViennaRNA. I then present Nestor, some past
-work from Bill Jannen with my advisor Daniel Aalberts. Then I present
-my own version of Nestor, splitting clusters based on partition
-function results, which I call the PF method of Nestor. Finally I
-describe SHAPE analysis on RNA, our interpretation and processing of
-that data, and compare the results found with the PF method of Nestor
-to the output of that processing. 
+Chapter 4 defines macrostates and examines previous methods of
+grouping structures including Ding and Lawrence's Sfold, Barriers from
+ViennaRNA, and Nestor from Aalberts and Jannen. I then present a new
+approach to Nestor, splitting clusters based on partition function
+results, which I call NestorPF. Finally I describe SHAPE chemical
+mapping experiments to probe RNA structure, our method to process
+mutate-and-map experimental data. We compare our analysis of
+mutate-and-map experiments with NestorPF prediction.
 
-Chapter 5 concludes and presents some future work, including doing the
-same optimizations mentioned in chapters 2 and 3 for the pseudoknot
-algorithm, which could greatly expand the predictive ability of
-secondary structure algorithm.
-
-At the end of this thesis, I hope that the reader has a very good
-understanding of the historical development of RNA secondary structure
-prediction algorithm, a good grasp on the algorithms especially my
-improvements, and a good idea of where further research could be done
-to push the field forward.
+Chapter 5 concludes and presents some future work, including the
+prospects of using the known-pairs heuristic to create a pseudoknot
+algorithm, which could greatly expand the predictive ability of RNA
+secondary structures.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
