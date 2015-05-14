@@ -1,0 +1,4 @@
+#!/bin/sh
+pnest bistable.seq
+python PijToPi.py compat.pairs >> compat.pi
+python PijToPi.py incompat.pairs >> noncompat.pi
